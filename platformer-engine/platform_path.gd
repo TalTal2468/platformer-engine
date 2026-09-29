@@ -1,5 +1,5 @@
 extends Path2D
-#Heyy Tal tal
+#test test sai
 @export var line_color := Color.DIM_GRAY
 var line_width: float = 6.0
 var circle_radius: float = 8.0
