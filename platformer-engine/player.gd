@@ -1,5 +1,6 @@
 class_name Player
 extends CharacterBody2D
+
 #TEST BY TALYN
 
 #region OnReady
