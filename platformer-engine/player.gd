@@ -1,8 +1,5 @@
 class_name Player
 extends CharacterBody2D
-
-### Test by Talyn (2)
-
 #region OnReady
 @onready var jump_particles = $"ParticleEffects/JumpParticles"
 @onready var wall_slide_particles = $"ParticleEffects/WallSlideParticles"
