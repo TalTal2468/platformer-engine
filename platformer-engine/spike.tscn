@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cgfmd78i8tlpv" path="res://spike_visuals&hitbox.gd" id="2_7k7bx"]
 
 [sub_resource type="Curve2D" id="Curve2D_8ryga"]
+bake_interval = 1.0
 
 [node name="Spike" type="Node2D" unique_id=487463883]
 script = ExtResource("1_8ryga")

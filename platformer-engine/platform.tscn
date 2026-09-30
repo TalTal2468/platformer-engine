@@ -4,12 +4,13 @@
 [ext_resource type="Script" uid="uid://0eupoh8nnpbs" path="res://platform_path.gd" id="2_s8bxr"]
 
 [sub_resource type="Curve2D" id="Curve2D_mi635"]
+bake_interval = 1.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_5ajho"]
-size = Vector2(100, 100)
+size = Vector2(50, 50)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mi635"]
-size = Vector2(100, 100)
+size = Vector2(50, 50)
 
 [node name="Platform" type="StaticBody2D" unique_id=251191168]
 script = ExtResource("1_mi635")
