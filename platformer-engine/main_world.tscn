@@ -27,6 +27,9 @@ point_count = 2
 
 [node name="Main World" type="Node2D" unique_id=66409383]
 
+[node name="SpawnPoint" type="Marker2D" parent="." unique_id=28430417]
+position = Vector2(575, 300)
+
 [node name="Player" parent="." unique_id=934229367 node_paths=PackedStringArray("respawn_point") instance=ExtResource("1_itk02")]
 position = Vector2(574, 300)
 respawn_point = NodePath("../SpawnPoint")
@@ -131,9 +134,6 @@ rotation = 1.5707964
 
 [node name="SpikePath" parent="Spikes/Spike2" index="0" unique_id=513896751]
 curve = SubResource("Curve2D_whfra")
-
-[node name="SpawnPoint" type="Marker2D" parent="." unique_id=28430417]
-position = Vector2(575, 300)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]
