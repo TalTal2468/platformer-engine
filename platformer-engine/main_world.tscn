@@ -89,7 +89,7 @@ curve = SubResource("Curve2D_43o5b")
 [node name="PlatformPathFollow" parent="Platforms/Platform11/PlatformPath" index="0" unique_id=1545196919]
 rotation = -1.5647964
 
-[node name="PlatformVisuals&Hitbox" parent="Platforms/Platform11/PlatformPath" index="1" unique_id=1390017336]
+[node name="PlatformVisuals&Hitbox" parent="Platforms/Platform11" index="1" unique_id=1390017336]
 rotation = -1.5647964
 
 [node name="Platform12" parent="Platforms" unique_id=19157776 instance=ExtResource("2_uoqbt")]

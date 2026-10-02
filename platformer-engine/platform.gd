@@ -1,4 +1,4 @@
-extends StaticBody2D
+extends Node2D
 
 @onready var pathFollow: PathFollow2D = $PlatformPath/PlatformPathFollow
 @export var speed = 1.0

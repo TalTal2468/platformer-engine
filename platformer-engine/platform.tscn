@@ -12,7 +12,7 @@ size = Vector2(50, 50)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mi635"]
 size = Vector2(50, 50)
 
-[node name="Platform" type="StaticBody2D" unique_id=251191168]
+[node name="Platform" type="Node2D" unique_id=1213054912]
 script = ExtResource("1_mi635")
 
 [node name="PlatformPath" type="Path2D" parent="." unique_id=768050403]
@@ -23,14 +23,14 @@ script = ExtResource("2_s8bxr")
 rotates = false
 
 [node name="PlatformMover" type="RemoteTransform2D" parent="PlatformPath/PlatformPathFollow" unique_id=1587857059]
-remote_path = NodePath("../../PlatformVisuals&Hitbox")
+remote_path = NodePath("../../../PlatformVisuals&Hitbox")
 
-[node name="PlatformVisuals&Hitbox" type="AnimatableBody2D" parent="PlatformPath" unique_id=1390017336]
+[node name="PlatformVisuals&Hitbox" type="AnimatableBody2D" parent="." unique_id=1390017336]
 z_as_relative = false
 
-[node name="PlatformVisual" type="MeshInstance2D" parent="PlatformPath/PlatformVisuals&Hitbox" unique_id=1078745339]
+[node name="PlatformVisual" type="MeshInstance2D" parent="PlatformVisuals&Hitbox" unique_id=1078745339]
 modulate = Color(0.5882353, 0.5882353, 0.5882353, 1)
 mesh = SubResource("QuadMesh_5ajho")
 
-[node name="PlatformHitbox" type="CollisionShape2D" parent="PlatformPath/PlatformVisuals&Hitbox" unique_id=1339116433]
+[node name="PlatformHitbox" type="CollisionShape2D" parent="PlatformVisuals&Hitbox" unique_id=1339116433]
 shape = SubResource("RectangleShape2D_mi635")
