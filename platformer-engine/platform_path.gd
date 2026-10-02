@@ -6,6 +6,7 @@ var scaleX : float
 var scaleY : float
 var loop : bool
 var one_shot : bool
+var show_path : bool
 
 func _ready() -> void:
 	# Force the node to redraw if the curve changes at runtime
@@ -15,7 +16,7 @@ func _ready() -> void:
 
 func _draw() -> void:
 	var points = curve.get_baked_points()
-	if points.size() < 2 or one_shot: return
+	if points.size() < 2 or one_shot or not show_path: return
 	
 	var scaled_points : PackedVector2Array
 	for point in points:

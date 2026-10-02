@@ -4,6 +4,7 @@ extends Node2D
 @export var speed = 1.0
 @export var loop := true
 @export var one_shot := false
+@export var show_path := true
 var time_passed: float = 0.0
 
 func _ready():
@@ -11,6 +12,7 @@ func _ready():
 	$PlatformPath.one_shot = one_shot
 	$PlatformPath.scaleX = scale.x
 	$PlatformPath.scaleY = scale.y
+	$PlatformPath.show_path = show_path
 	if pathFollow:
 		pathFollow.loop = not one_shot
 
