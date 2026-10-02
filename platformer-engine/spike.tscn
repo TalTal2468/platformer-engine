@@ -16,16 +16,16 @@ curve = SubResource("Curve2D_8ryga")
 rotates = false
 
 [node name="SpikeMover" type="RemoteTransform2D" parent="SpikePath/SpikePathFollow" unique_id=218384914]
-remote_path = NodePath("../../SpikeVisuals&Hitbox")
+remote_path = NodePath("../../../SpikeVisuals&Hitbox")
 
-[node name="SpikeVisuals&Hitbox" type="Area2D" parent="SpikePath" unique_id=2120619052]
+[node name="SpikeVisuals&Hitbox" type="Area2D" parent="." unique_id=2120619052]
 script = ExtResource("2_7k7bx")
 
-[node name="SpikeVisual" type="Polygon2D" parent="SpikePath/SpikeVisuals&Hitbox" unique_id=572706150]
+[node name="SpikeVisual" type="Polygon2D" parent="SpikeVisuals&Hitbox" unique_id=572706150]
 color = Color(1, 0, 0, 1)
 polygon = PackedVector2Array(0, -50, -25, 0, 25, 0)
 
-[node name="SpikeHitbox" type="CollisionPolygon2D" parent="SpikePath/SpikeVisuals&Hitbox" unique_id=1881009794]
+[node name="SpikeHitbox" type="CollisionPolygon2D" parent="SpikeVisuals&Hitbox" unique_id=1881009794]
 polygon = PackedVector2Array(0, -50, -25, 0, 25, 0)
 
-[connection signal="body_entered" from="SpikePath/SpikeVisuals&Hitbox" to="SpikePath/SpikeVisuals&Hitbox" method="_on_body_entered"]
+[connection signal="body_entered" from="SpikeVisuals&Hitbox" to="SpikeVisuals&Hitbox" method="_on_body_entered"]
