@@ -21,7 +21,7 @@ func get_hitbox_height() -> float:
 			elif shape is CircleShape2D: return shape.radius * 2.0
 			elif shape is SeparationRayShape2D: return shape.length
 	push_warning("CollisionShape2D not found or missing a Shape2D resource!")
-	return 50.0
+	return 16.0
 
 var hitbox_height: float
 #endregion
@@ -30,41 +30,41 @@ var hitbox_height: float
 @export var respawn_point: Marker2D
 @export var can_move := true
 @export var can_die := true
-@export var base_zoom := 0.9
+@export var base_zoom := 1.0
 
 @export_group("Basic Movement")
-@export var speed := 400
-@export var gravity := 1800
-@export var acceleration := 2000
-@export var max_speedX := 800
-@export var max_speedY := 1000
+@export var speed := 128
+@export var gravity := 576
+@export var acceleration := 640
+@export var max_speedX := 256
+@export var max_speedY := 320
 
 @export_group("Advanced Movement")
 @export var starting_gravity_normal := true
 @export var flip_camera_with_gravity := false
 @export var ice_physics := false
-@export var ice_acceleration := 800
+@export var ice_acceleration := 256
 
 @export_group("Jump Settings")
-@export var jump_force := 800
+@export var jump_force := 256
 @export var max_jumps := 2
 
 @export_group("Wall Settings")
 @export var wall_mechanics_enabled := true
 @export_subgroup("Wall Slide")
-@export var wall_slide_speed := 200
+@export var wall_slide_speed := 64
 @export var max_wall_slide_time := 1.0
 @export var limited_wall_slide := true
 @export var no_jumps_slide := true
 @export_subgroup("Wall Jump")
-@export var wall_pushback := 400
+@export var wall_pushback := 128
 @export var free_first_wall_jump := false
 @export var allow_zig_zag := true
 @export var inf_wall_jumps := false
 
 @export_group("Dash Settings")
 @export var can_dash := true
-@export var dash_speed := 1000
+@export var dash_speed := 320
 @export var dash_duration := 0.1
 @export var dash_cooldown := 0.5
 @export var gravity_during_dash := false
@@ -222,8 +222,8 @@ func handle_wall_logic(delta: float) -> void:
 			currently_sliding = true
 			wall_slide_timer += delta
 			var slide_target = wall_slide_speed * gravity_direction
-			velocity.y = move_toward(velocity.y, slide_target, 5000 * delta)
-			wall_slide_particles.position.x = 15 if get_wall_normal().x < 0 else -15
+			velocity.y = move_toward(velocity.y, slide_target, 1600 * delta)
+			wall_slide_particles.position.x = 5 if get_wall_normal().x < 0 else -5
 		else:
 			apply_gravity(delta)
 			
@@ -484,7 +484,7 @@ func flash_red() -> void:
 			collision_node = child
 			break
 			
-	var hitbox_size := Vector2(50, 50)
+	var hitbox_size := Vector2(16, 16)
 	if collision_node and collision_node.shape:
 		var shape = collision_node.shape
 		if shape is RectangleShape2D:

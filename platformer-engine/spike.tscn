@@ -23,9 +23,9 @@ script = ExtResource("2_7k7bx")
 
 [node name="SpikeVisual" type="Polygon2D" parent="SpikeVisuals&Hitbox" unique_id=572706150]
 color = Color(1, 0, 0, 1)
-polygon = PackedVector2Array(0, -50, -25, 0, 25, 0)
+polygon = PackedVector2Array(0, -16, -8, 0, 8, 0)
 
 [node name="SpikeHitbox" type="CollisionPolygon2D" parent="SpikeVisuals&Hitbox" unique_id=1881009794]
-polygon = PackedVector2Array(0, -50, -25, 0, 25, 0)
+polygon = PackedVector2Array(0, -16, -8, 0, 8, 0)
 
 [connection signal="body_entered" from="SpikeVisuals&Hitbox" to="SpikeVisuals&Hitbox" method="_on_body_entered"]
