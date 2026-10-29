@@ -123,6 +123,10 @@ scale = Vector2(2, 2)
 position = Vector2(655, 175)
 scale = Vector2(2, 2)
 
+[node name="Platform18" parent="Platforms" unique_id=1213054912 instance=ExtResource("2_uoqbt")]
+position = Vector2(1650, -800)
+scale = Vector2(2, 2)
+
 [node name="Spikes" type="Node2D" parent="." unique_id=1339103732]
 
 [node name="Spike" parent="Spikes" unique_id=1080457633 instance=ExtResource("3_43o5b")]
