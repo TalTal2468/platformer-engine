@@ -31,7 +31,7 @@ point_count = 2
 position = Vector2(575, 300)
 
 [node name="Player" parent="." unique_id=934229367 node_paths=PackedStringArray("respawn_point") instance=ExtResource("1_itk02")]
-position = Vector2(574, 300)
+position = Vector2(575, 300)
 respawn_point = NodePath("../SpawnPoint")
 phase_rotate = true
 
@@ -120,7 +120,7 @@ position = Vector2(659, 272)
 scale = Vector2(2, 2)
 
 [node name="Platform17" parent="Platforms" unique_id=1543793294 instance=ExtResource("2_uoqbt")]
-position = Vector2(650, 175)
+position = Vector2(655, 175)
 scale = Vector2(2, 2)
 
 [node name="Spikes" type="Node2D" parent="." unique_id=1339103732]
