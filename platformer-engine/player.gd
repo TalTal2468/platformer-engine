@@ -117,7 +117,7 @@ var just_respawned := true
 var has_flashed_red := false
 var active_flash_box: ColorRect = null
 #endregion
-#region Memory Helpers
+#region Memory Cleanup
 func cleanup_phase_copy() -> void:
 	if is_instance_valid(phase_copy):
 		phase_copy.queue_free()
