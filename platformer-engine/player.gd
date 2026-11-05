@@ -36,38 +36,38 @@ var hitbox_height: float
 @export var base_zoom := 0.9
 
 @export_group("Basic Movement")
-@export var speed := 400
+@export var base_speed := 400
 @export var gravity := 1800
-@export var acceleration := 2000
-@export var max_speedX := 800
-@export var max_speedY := 1000
+@export var base_acceleration := 2000
+@export var base_max_speedX := 800
+@export var base_max_speedY := 1000
 
 @export_group("Advanced Movement")
 @export var starting_gravity_normal := true
 @export var flip_camera_with_gravity := false
 @export var ice_physics := false
-@export var ice_acceleration := 800
+@export var base_ice_acceleration := 800
 
 @export_group("Jump Settings")
-@export var jump_force := 800
+@export var base_jump_force := 800
 @export var max_jumps := 2
 
 @export_group("Wall Settings")
 @export var wall_mechanics_enabled := true
 @export_subgroup("Wall Slide")
-@export var wall_slide_speed := 200
+@export var base_wall_slide_speed := 200
 @export var max_wall_slide_time := 1.0
 @export var limited_wall_slide := true
 @export var no_jumps_slide := true
 @export_subgroup("Wall Jump")
-@export var wall_pushback := 400
+@export var base_wall_pushback := 400
 @export var free_first_wall_jump := false
 @export var allow_zig_zag := true
 @export var inf_wall_jumps := false
 
 @export_group("Dash Settings")
 @export var can_dash := true
-@export var dash_speed := 1000
+@export var base_dash_speed := 1000
 @export var dash_duration := 0.1
 @export var dash_cooldown := 0.5
 @export var gravity_during_dash := false
@@ -84,10 +84,22 @@ var hitbox_height: float
 @export var phase_rotate := false
 #endregion
 #region Internal Variables
+# Stored Base Variables
+var speed = base_speed
+var acceleration = base_acceleration
+var max_speedX = base_max_speedX
+var max_speedY = base_max_speedY
+var jump_force = base_jump_force
+var ice_acceleration = base_ice_acceleration
+var wall_slide_speed = base_wall_slide_speed
+var wall_pushback = base_wall_pushback
+var dash_speed = base_dash_speed
+
 # Movement & Jump
 var jumps: int = 0
 var dash_direction := Vector2.ZERO
 var last_key_pressed := ""
+var quarter_size_multiplier: float = lerp(1.0, scale[0], 0.5)
 
 # Dash
 var is_dashing := false
@@ -197,7 +209,7 @@ func _physics_process(delta: float) -> void:
 	
 	### TEST: FOR SIZE CHANGE
 	if Input.is_action_just_pressed("big scale up"):
-		initiate_size_change(3)
+		initiate_size_change(2)
 
 func handle_timers(delta: float) -> void:
 	dash_cooldown_timer -= delta
@@ -305,11 +317,11 @@ func handle_horizontal_movement(delta: float, input_direction: float) -> void:
 #region Gravity
 func apply_gravity(delta: float) -> void:
 	var gravity_step = gravity * delta * gravity_direction
-	var max_fall = max_speedY * gravity_direction
+	var max_fall_speed = max_speedY * gravity_direction
 	if normal_gravity:
-		velocity.y = min(velocity.y + gravity_step, max_fall)
+		velocity.y = min(velocity.y + gravity_step, max_fall_speed)
 	else:
-		velocity.y = max(velocity.y + gravity_step, max_fall)
+		velocity.y = max(velocity.y + gravity_step, max_fall_speed)
 
 func handle_rotation(delta: float) -> void:
 	var directionX = Input.get_axis("left", "right")
@@ -452,12 +464,10 @@ func handle_tap(key: String) -> void:
 		tap_timer = 0.2
 #endregion
 #region Size Change
-#  grow, shrink, big scale up
-
 #in engine callbacks:
 ### TEST: FOR SIZE CHANGE
 	#if Input.is_action_just_pressed("big scale up"):
-		#initiate_size_change(3)
+		#initiate_size_change(2)
 
 func initiate_size_change(target_scale_multiplier: float):
 	cleanup_size_change_tween()
@@ -480,17 +490,37 @@ func initiate_size_change(target_scale_multiplier: float):
 	
 func _apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
-	### test clipping into platforms here
+	### need to test clipping into platforms here
 	scale = next_scale
-	hitbox_height = original_hitbox_height * scale[0]
+	hitbox_height = original_hitbox_height * scale[1]
+	quarter_size_multiplier = lerp(1.0, scale[0], 0.25)
+	update_movement_stats()
+
+func update_movement_stats() -> void:
+	speed = base_speed * quarter_size_multiplier
+	acceleration = base_acceleration * quarter_size_multiplier
+	max_speedX = base_max_speedX * quarter_size_multiplier
+	max_speedY = base_max_speedY * quarter_size_multiplier
+	jump_force = base_jump_force * quarter_size_multiplier
+	ice_acceleration = base_ice_acceleration * quarter_size_multiplier
+	wall_slide_speed = base_wall_slide_speed * quarter_size_multiplier
+	wall_pushback = base_wall_pushback * quarter_size_multiplier
+	dash_speed = base_dash_speed * quarter_size_multiplier
 
 ### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
+### Stuff I still need to do:
+# Make sure particles are in the right places
+# Make it so you can use +/-/0 to change size
+	# grow (+/=), shrink (-), revert scale (0), big scale up (k)
+# Make it so you stop growing when you gonna collide with platforms
+# Make size reset on death and game start
 
 #endregion
 #region Camera
 func resize_camera() -> void:
 	var delta = get_process_delta_time()
-	var target_zoom_vector = Vector2(base_zoom, base_zoom)
+	var target_zoom = base_zoom / quarter_size_multiplier
+	var target_zoom_vector = Vector2(target_zoom, target_zoom)
 	camera.zoom = camera.zoom.lerp(target_zoom_vector, 5.0 * delta)
 	if flip_camera_with_gravity:
 		camera.rotation = lerp_angle(camera.rotation, player_visuals.rotation, 10.0 * delta)
