@@ -76,6 +76,9 @@ var hitbox_height: float
 @export var can_change_size := true
 @export var starting_size := 1.0
 @export var growth_rate := 1.5
+@export var stats_multiplier_weight := 0.25
+# Controls how strongly movement stats and camera scale with size
+	# 0.0 -> unscaled base stats; 1.0 -> fully size-scaled stats
 @export var min_size := 0.5
 @export var max_size := 2.0
 
@@ -99,7 +102,7 @@ var dash_speed = base_dash_speed
 var jumps: int = 0
 var dash_direction := Vector2.ZERO
 var last_key_pressed := ""
-var quarter_size_multiplier: float = lerp(1.0, scale[0], 0.5)
+var stats_multiplier: float = lerp(1.0, scale[0], stats_multiplier_weight)
 
 # Dash
 var is_dashing := false
@@ -493,23 +496,23 @@ func _apply_scale_step(progress, start_scale, target_scale):
 	### need to test clipping into platforms here
 	scale = next_scale
 	hitbox_height = original_hitbox_height * scale[1]
-	quarter_size_multiplier = lerp(1.0, scale[0], 0.25)
+	stats_multiplier = lerp(1.0, scale[0], stats_multiplier_weight)
 	update_movement_stats()
 
 func update_movement_stats() -> void:
-	speed = base_speed * quarter_size_multiplier
-	acceleration = base_acceleration * quarter_size_multiplier
-	max_speedX = base_max_speedX * quarter_size_multiplier
-	max_speedY = base_max_speedY * quarter_size_multiplier
-	jump_force = base_jump_force * quarter_size_multiplier
-	ice_acceleration = base_ice_acceleration * quarter_size_multiplier
-	wall_slide_speed = base_wall_slide_speed * quarter_size_multiplier
-	wall_pushback = base_wall_pushback * quarter_size_multiplier
-	dash_speed = base_dash_speed * quarter_size_multiplier
+	speed = base_speed * stats_multiplier
+	acceleration = base_acceleration * stats_multiplier
+	max_speedX = base_max_speedX * stats_multiplier
+	max_speedY = base_max_speedY * stats_multiplier
+	jump_force = base_jump_force * stats_multiplier
+	ice_acceleration = base_ice_acceleration * stats_multiplier
+	wall_slide_speed = base_wall_slide_speed * stats_multiplier
+	wall_pushback = base_wall_pushback * stats_multiplier
+	dash_speed = base_dash_speed * stats_multiplier
 
 ### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
 ### Stuff I still need to do:
-# Make sure particles are in the right places
+# Make sure particles are in the right places and are scaled
 # Make it so you can use +/-/0 to change size
 	# grow (+/=), shrink (-), revert scale (0), big scale up (k)
 # Make it so you stop growing when you gonna collide with platforms
@@ -519,7 +522,7 @@ func update_movement_stats() -> void:
 #region Camera
 func resize_camera() -> void:
 	var delta = get_process_delta_time()
-	var target_zoom = base_zoom / quarter_size_multiplier
+	var target_zoom = base_zoom / stats_multiplier
 	var target_zoom_vector = Vector2(target_zoom, target_zoom)
 	camera.zoom = camera.zoom.lerp(target_zoom_vector, 5.0 * delta)
 	if flip_camera_with_gravity:
