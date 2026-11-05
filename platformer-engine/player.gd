@@ -518,6 +518,9 @@ func update_movement_stats() -> void:
 # Make it so you stop growing when you gonna collide with platforms
 # Make size reset on death and game start
 
+# Go into code version history and add stuff to work log for before I made it
+# possibly use getters instead of update_movement_stats
+
 #endregion
 #region Camera
 func resize_camera() -> void:
@@ -612,7 +615,6 @@ func freeze_player() -> void:
 	wall_slide_particles.emitting = false
 	is_rotating = false
 	player_visuals.visible = true
-	
 	cleanup_flash_box()
 	cleanup_phase_copy()
 
