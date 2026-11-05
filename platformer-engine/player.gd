@@ -8,6 +8,7 @@ extends CharacterBody2D
 @onready var player_visuals = $PlayerVisuals
 
 var phase_copy: Node2D = null
+var original_default_child_y_positions := {}
 var default_child_y_positions := {}
 var flash_tween: Tween = null
 var death_tween: Tween = null
@@ -150,7 +151,8 @@ func _ready() -> void:
 	original_hitbox_height = get_hitbox_height()
 	hitbox_height = get_hitbox_height()
 	for child in get_children():
-		default_child_y_positions[child] = child.position.y
+		original_default_child_y_positions[child] = child.position.y
+	default_child_y_positions = original_default_child_y_positions
 	normal_gravity = starting_gravity_normal
 	sync_gravity_state()
 	if not starting_gravity_normal:
@@ -384,7 +386,7 @@ func set_children_y_offset(direction: int) -> void:
 			continue
 		if default_child_y_positions.has(child):
 			var default_y: float = default_child_y_positions[child]
-			child.position.y = default_y if direction == 1 else default_y + hitbox_height
+			child.position.y = default_y if direction == 1 else default_y + original_hitbox_height
 		elif child == phase_copy and is_instance_valid(phase_copy):
 			phase_copy.position.y = player_visuals.position.y
 #endregion
