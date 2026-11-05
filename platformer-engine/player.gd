@@ -11,6 +11,7 @@ var phase_copy: Node2D = null
 var default_child_y_positions := {}
 var flash_tween: Tween = null
 var death_tween: Tween = null
+var size_change_tween: Tween = null
 
 func get_hitbox_height() -> float:
 	for child in get_children():
@@ -68,6 +69,9 @@ var hitbox_height: float
 @export var dash_duration := 0.1
 @export var dash_cooldown := 0.5
 @export var gravity_during_dash := false
+
+@export_group("Size Change")
+@export var can_change_size := true
 
 @export_group("Visual Effects")
 @export var particles := true
@@ -130,6 +134,11 @@ func cleanup_flash_box() -> void:
 	if is_instance_valid(active_flash_box):
 		active_flash_box.queue_free()
 	active_flash_box = null
+
+func cleanup_size_change_tween() -> void:
+	if size_change_tween and size_change_tween.is_valid():
+		size_change_tween.kill()
+		size_change_tween = null
 #endregion
 #region Engine Callbacks
 func _ready() -> void:
@@ -177,6 +186,10 @@ func _physics_process(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("restart"): 
 		die()
+	
+	### TEST: FOR SIZE CHANGE
+	if Input.is_action_just_pressed("restart"):
+		initiate_size_change(3)
 
 func handle_timers(delta: float) -> void:
 	dash_cooldown_timer -= delta
@@ -430,6 +443,19 @@ func handle_tap(key: String) -> void:
 		last_key_pressed = key
 		tap_timer = 0.2
 #endregion
+#region Size Change
+#  grow, shrink, big scale up
+
+#in engine callbacks:
+### TEST: FOR SIZE CHANGE
+	#if Input.is_action_just_pressed("restart"):
+		#initiate_size_change(3)
+
+func initiate_size_change(target_scale_multiplier: float):
+	cleanup_size_change_tween()
+	var start_scale = scale
+	
+#endregion
 #region Camera
 func resize_camera() -> void:
 	var delta = get_process_delta_time()
@@ -446,7 +472,7 @@ func die() -> void:
 	if not has_flashed_red:
 		flash_red()
 		return
-		
+	
 	is_dead = true
 	
 	if death_tween and death_tween.is_valid():
