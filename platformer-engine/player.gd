@@ -24,6 +24,7 @@ func get_hitbox_height() -> float:
 	push_warning("CollisionShape2D not found or missing a Shape2D resource!")
 	return 50.0
 
+var original_hitbox_height: float
 var hitbox_height: float
 #endregion
 #region Exports
@@ -70,8 +71,12 @@ var hitbox_height: float
 @export var dash_cooldown := 0.5
 @export var gravity_during_dash := false
 
-@export_group("Size Change")
+@export_group("Size Settings")
 @export var can_change_size := true
+@export var starting_size := 1.0
+@export var growth_rate := 1.5
+@export var min_size := 0.5
+@export var max_size := 2.0
 
 @export_group("Visual Effects")
 @export var particles := true
@@ -142,6 +147,7 @@ func cleanup_size_change_tween() -> void:
 #endregion
 #region Engine Callbacks
 func _ready() -> void:
+	original_hitbox_height = get_hitbox_height()
 	hitbox_height = get_hitbox_height()
 	for child in get_children():
 		default_child_y_positions[child] = child.position.y
@@ -188,7 +194,7 @@ func _physics_process(delta: float) -> void:
 		die()
 	
 	### TEST: FOR SIZE CHANGE
-	if Input.is_action_just_pressed("restart"):
+	if Input.is_action_just_pressed("big scale up"):
 		initiate_size_change(3)
 
 func handle_timers(delta: float) -> void:
@@ -448,13 +454,36 @@ func handle_tap(key: String) -> void:
 
 #in engine callbacks:
 ### TEST: FOR SIZE CHANGE
-	#if Input.is_action_just_pressed("restart"):
+	#if Input.is_action_just_pressed("big scale up"):
 		#initiate_size_change(3)
 
 func initiate_size_change(target_scale_multiplier: float):
 	cleanup_size_change_tween()
 	var start_scale = scale
+	if not start_scale[0] == start_scale[1]:
+		push_error("Error: player scale stretched")
+		return
+	var target_scale = Vector2(target_scale_multiplier, target_scale_multiplier)
+	var size_difference = abs(target_scale_multiplier - start_scale[0])
+	var dynamic_growth_rate = pow(size_difference, (1.0/3.0)) * growth_rate
+	var active_growth_rate = max(growth_rate, dynamic_growth_rate)
+	var duration = size_difference / active_growth_rate
 	
+	size_change_tween = create_tween()
+	size_change_tween.tween_method(
+		func(progress): _apply_scale_step(progress, start_scale, target_scale), 
+						0.0, 1.0, duration)
+	size_change_tween.set_trans(Tween.TRANS_CUBIC)
+	size_change_tween.set_ease(Tween.EASE_OUT)
+	
+func _apply_scale_step(progress, start_scale, target_scale):
+	var next_scale = start_scale.lerp(target_scale, progress)
+	### test clipping into platforms here
+	scale = next_scale
+	hitbox_height = original_hitbox_height * scale[0]
+
+### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
+
 #endregion
 #region Camera
 func resize_camera() -> void:
