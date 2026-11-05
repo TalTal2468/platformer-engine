@@ -19,7 +19,6 @@ size = Vector2(50, 50)
 
 [node name="Player" type="CharacterBody2D" unique_id=934229367]
 script = ExtResource("1_onrkg")
-phase_rotate = true
 
 [node name="TestRect" type="ColorRect" parent="." unique_id=1561195534]
 offset_left = -4.0
