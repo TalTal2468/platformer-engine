@@ -15,6 +15,10 @@ run/main_scene="res://main_world.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameState="*uid://cnxpcf4mcgaqr"
+
 [display]
 
 window/size/mode=2
