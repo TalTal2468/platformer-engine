@@ -95,6 +95,9 @@ rotation = -1.5647964
 [node name="PlatformVisuals&Hitbox" parent="Platforms/Platform11" index="1" unique_id=1390017336]
 rotation = -1.5647964
 
+[node name="Platform Visual" parent="Platforms/Platform11/PlatformVisuals&Hitbox" index="1" unique_id=1897999183]
+texture_filter = 1
+
 [node name="Platform12" parent="Platforms" unique_id=19157776 instance=ExtResource("2_uoqbt")]
 position = Vector2(900, -75)
 scale = Vector2(3, 1)
@@ -102,6 +105,9 @@ speed = 0.5
 
 [node name="PlatformPath" parent="Platforms/Platform12" index="0" unique_id=768050403]
 curve = SubResource("Curve2D_3etub")
+
+[node name="Platform Visual" parent="Platforms/Platform12/PlatformVisuals&Hitbox" parent_id_path=PackedInt32Array(19157776, 1390017336) index="1" unique_id=1897999183]
+texture_filter = 1
 
 [node name="Platform13" parent="Platforms" unique_id=1678461570 instance=ExtResource("2_uoqbt")]
 position = Vector2(815, 10)
