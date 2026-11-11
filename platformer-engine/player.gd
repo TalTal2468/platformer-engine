@@ -177,42 +177,31 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_dead or not can_move: return
-	
 	input_disabled_this_frame = false
 	handle_rotation(delta)
 	handle_timers(delta)
-	
 	if is_dashing:
 		dash(delta)
 		return
-		
 	var input_direction := 0.0
 	if not input_disabled_this_frame:
 		input_direction = Input.get_axis("left", "right")
-		
 	if flip_camera_with_gravity and not normal_gravity:
 		input_direction *= -1
-		
 	var is_moving_into_wall: bool = sign(input_direction) == -sign(get_wall_normal().x) and input_direction != 0
 	pushing_against_wall = is_on_wall() and is_moving_into_wall
 	pushing_against_wall_only = is_on_wall_only() and is_moving_into_wall
-	
 	handle_ground_air_state(delta)
 	handle_wall_logic(delta)
 	handle_jump_input()
 	handle_horizontal_movement(delta, input_direction)
+	handle_size_change(delta)
 	move_and_slide()
-	
 	if test_move(global_transform, Vector2.ZERO): 
 		die()
 	resize_camera()
-	
 	if Input.is_action_just_pressed("restart"): 
 		die()
-	
-	### TEST: FOR SIZE CHANGE
-	if Input.is_action_just_pressed("big scale up"):
-		initiate_size_change(2)
 
 func handle_timers(delta: float) -> void:
 	dash_cooldown_timer -= delta
@@ -467,10 +456,15 @@ func handle_tap(key: String) -> void:
 		tap_timer = 0.2
 #endregion
 #region Size Change
-#in engine callbacks:
-### TEST: FOR SIZE CHANGE
-	#if Input.is_action_just_pressed("big scale up"):
-		#initiate_size_change(2)
+func handle_size_change(delta):
+	if Input.is_action_just_pressed("big scale up"):
+		initiate_size_change(2.0)
+	elif Input.is_action_just_pressed("revert scale"):
+		initiate_size_change(starting_size)
+	elif Input.is_action_pressed("grow"):
+		initiate_size_change(clamp(scale.x+growth_rate*delta, min_size, max_size))
+	elif Input.is_action_pressed("shrink"):
+		initiate_size_change(clamp(scale.x-growth_rate*delta, min_size, max_size))
 
 func initiate_size_change(target_scale_multiplier: float):
 	cleanup_size_change_tween()
@@ -513,8 +507,6 @@ func update_movement_stats() -> void:
 ### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
 ### Stuff I still need to do:
 # Make sure particles are in the right places and are scaled
-# Make it so you can use +/-/0 to change size
-	# grow (+/=), shrink (-), revert scale (0), big scale up (k)
 # Make it so you stop growing when you gonna collide with platforms
 # Make size reset on death and game start
 
