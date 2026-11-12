@@ -8,9 +8,11 @@ extends CharacterBody2D
 @onready var player_visuals = $PlayerVisuals
 
 var phase_copy: Node2D = null
+var original_default_child_y_positions := {}
 var default_child_y_positions := {}
 var flash_tween: Tween = null
 var death_tween: Tween = null
+var size_change_tween: Tween = null
 
 func get_hitbox_height() -> float:
 	for child in get_children():
@@ -23,6 +25,7 @@ func get_hitbox_height() -> float:
 	push_warning("CollisionShape2D not found or missing a Shape2D resource!")
 	return 50.0
 
+var original_hitbox_height: float
 var hitbox_height: float
 #endregion
 #region Exports
@@ -33,51 +36,73 @@ var hitbox_height: float
 @export var base_zoom := 0.9
 
 @export_group("Basic Movement")
-@export var speed := 400
+@export var base_speed := 400
 @export var gravity := 1800
-@export var acceleration := 2000
-@export var max_speedX := 800
-@export var max_speedY := 1000
+@export var base_acceleration := 2000
+@export var base_max_speedX := 800
+@export var base_max_speedY := 1000
 
 @export_group("Advanced Movement")
 @export var starting_gravity_normal := true
 @export var flip_camera_with_gravity := false
 @export var ice_physics := false
-@export var ice_acceleration := 800
+@export var base_ice_acceleration := 800
 
 @export_group("Jump Settings")
-@export var jump_force := 800
+@export var base_jump_force := 800
 @export var max_jumps := 2
 
 @export_group("Wall Settings")
 @export var wall_mechanics_enabled := true
 @export_subgroup("Wall Slide")
-@export var wall_slide_speed := 200
+@export var base_wall_slide_speed := 200
 @export var max_wall_slide_time := 1.0
 @export var limited_wall_slide := true
 @export var no_jumps_slide := true
 @export_subgroup("Wall Jump")
-@export var wall_pushback := 400
+@export var base_wall_pushback := 400
 @export var free_first_wall_jump := false
 @export var allow_zig_zag := true
 @export var inf_wall_jumps := false
 
 @export_group("Dash Settings")
 @export var can_dash := true
-@export var dash_speed := 1000
+@export var base_dash_speed := 1000
 @export var dash_duration := 0.1
 @export var dash_cooldown := 0.5
 @export var gravity_during_dash := false
+
+@export_group("Size Settings")
+@export var can_change_size := true
+@export var default_size := 1.0
+@export var growth_rate := 1.5
+@export var stats_multiplier_weight := 0.25
+# Controls how strongly movement stats and camera scale with size
+	# 0.0 -> unscaled base stats; 1.0 -> fully size-scaled stats
+@export var min_size := 0.5
+@export var max_size := 2.0
 
 @export_group("Visual Effects")
 @export var particles := true
 @export var phase_rotate := false
 #endregion
-#region Internal Variables
+#region Internal Variabless
+# Stored Base Variables
+var speed = base_speed
+var acceleration = base_acceleration
+var max_speedX = base_max_speedX
+var max_speedY = base_max_speedY
+var jump_force = base_jump_force
+var ice_acceleration = base_ice_acceleration
+var wall_slide_speed = base_wall_slide_speed
+var wall_pushback = base_wall_pushback
+var dash_speed = base_dash_speed
+
 # Movement & Jump
 var jumps: int = 0
 var dash_direction := Vector2.ZERO
 var last_key_pressed := ""
+var stats_multiplier: float = lerp(1.0, scale[0], stats_multiplier_weight)
 
 # Dash
 var is_dashing := false
@@ -116,8 +141,12 @@ var is_dead := false
 var just_respawned := true
 var has_flashed_red := false
 var active_flash_box: ColorRect = null
+
+# Size Change
+var changing_size := false
 #endregion
-#region Memory Helpers
+#region Memory Cleanup
+# This is all just-in-case memory cleanup, but I think they're generally not really needed
 func cleanup_phase_copy() -> void:
 	if is_instance_valid(phase_copy):
 		phase_copy.queue_free()
@@ -130,51 +159,52 @@ func cleanup_flash_box() -> void:
 	if is_instance_valid(active_flash_box):
 		active_flash_box.queue_free()
 	active_flash_box = null
+
+func cleanup_size_change_tween() -> void:
+	if size_change_tween and size_change_tween.is_valid():
+		size_change_tween.kill()
+		size_change_tween = null
 #endregion
 #region Engine Callbacks
 func _ready() -> void:
+	original_hitbox_height = get_hitbox_height()
 	hitbox_height = get_hitbox_height()
 	for child in get_children():
-		default_child_y_positions[child] = child.position.y
+		original_default_child_y_positions[child] = child.position.y
+	default_child_y_positions = original_default_child_y_positions
 	normal_gravity = starting_gravity_normal
 	sync_gravity_state()
 	if not starting_gravity_normal:
 		global_position.y -= hitbox_height
 	player_visuals.rotation = 0.0 if normal_gravity else PI
 	camera.zoom = Vector2(base_zoom, base_zoom)
+	initiate_size_change(default_size, 0.1)
 
 func _physics_process(delta: float) -> void:
 	if is_dead or not can_move: return
-	
 	input_disabled_this_frame = false
 	handle_rotation(delta)
 	handle_timers(delta)
-	
 	if is_dashing:
 		dash(delta)
 		return
-		
 	var input_direction := 0.0
 	if not input_disabled_this_frame:
 		input_direction = Input.get_axis("left", "right")
-		
 	if flip_camera_with_gravity and not normal_gravity:
 		input_direction *= -1
-		
 	var is_moving_into_wall: bool = sign(input_direction) == -sign(get_wall_normal().x) and input_direction != 0
 	pushing_against_wall = is_on_wall() and is_moving_into_wall
 	pushing_against_wall_only = is_on_wall_only() and is_moving_into_wall
-	
 	handle_ground_air_state(delta)
 	handle_wall_logic(delta)
 	handle_jump_input()
 	handle_horizontal_movement(delta, input_direction)
+	handle_size_change(delta)
 	move_and_slide()
-	
 	if test_move(global_transform, Vector2.ZERO): 
 		die()
 	resize_camera()
-	
 	if Input.is_action_just_pressed("restart"): 
 		die()
 
@@ -284,11 +314,11 @@ func handle_horizontal_movement(delta: float, input_direction: float) -> void:
 #region Gravity
 func apply_gravity(delta: float) -> void:
 	var gravity_step = gravity * delta * gravity_direction
-	var max_fall = max_speedY * gravity_direction
+	var max_fall_speed = max_speedY * gravity_direction
 	if normal_gravity:
-		velocity.y = min(velocity.y + gravity_step, max_fall)
+		velocity.y = min(velocity.y + gravity_step, max_fall_speed)
 	else:
-		velocity.y = max(velocity.y + gravity_step, max_fall)
+		velocity.y = max(velocity.y + gravity_step, max_fall_speed)
 
 func handle_rotation(delta: float) -> void:
 	var directionX = Input.get_axis("left", "right")
@@ -365,7 +395,7 @@ func set_children_y_offset(direction: int) -> void:
 			continue
 		if default_child_y_positions.has(child):
 			var default_y: float = default_child_y_positions[child]
-			child.position.y = default_y if direction == 1 else default_y + hitbox_height
+			child.position.y = default_y if direction == 1 else default_y + original_hitbox_height
 		elif child == phase_copy and is_instance_valid(phase_copy):
 			phase_copy.position.y = player_visuals.position.y
 #endregion
@@ -430,10 +460,73 @@ func handle_tap(key: String) -> void:
 		last_key_pressed = key
 		tap_timer = 0.2
 #endregion
+#region Size Change
+func handle_size_change(delta):
+	if not changing_size:
+		if Input.is_action_just_pressed("big scale up"):
+			initiate_size_change(2.0)
+		elif Input.is_action_just_pressed("revert scale"):
+			initiate_size_change(default_size)
+		elif Input.is_action_pressed("grow"):
+			initiate_size_change(clamp(scale.x+growth_rate*delta, min_size, max_size), 0)
+		elif Input.is_action_pressed("shrink"):
+			initiate_size_change(clamp(scale.x-growth_rate*delta, min_size, max_size), 0)
+
+func initiate_size_change(target_scale_multiplier: float, custom_duration: float = -1.0):
+	cleanup_size_change_tween()
+	var start_scale = scale
+	if not start_scale[0] == start_scale[1]:
+		push_error("Error: player scale stretched")
+		return
+	var target_scale = Vector2(target_scale_multiplier, target_scale_multiplier)
+	var duration = custom_duration
+	if custom_duration < 0:
+		var size_difference = abs(target_scale_multiplier - start_scale[0])
+		var dynamic_growth_rate = pow(size_difference, (1.0/3.0)) * growth_rate
+		var active_growth_rate = max(growth_rate, dynamic_growth_rate)
+		duration = size_difference / active_growth_rate
+	
+	changing_size = true
+	size_change_tween = create_tween()
+	size_change_tween.tween_method(
+		func(progress): _apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
+	size_change_tween.set_trans(Tween.TRANS_CUBIC)
+	size_change_tween.set_ease(Tween.EASE_OUT)
+	size_change_tween.tween_callback(func(): changing_size = false)
+	
+func _apply_scale_step(progress, start_scale, target_scale):
+	var next_scale = start_scale.lerp(target_scale, progress)
+	### need to test clipping into platforms here
+	scale = next_scale
+	hitbox_height = original_hitbox_height * scale[1]
+	stats_multiplier = lerp(1.0, scale[0], stats_multiplier_weight)
+	update_movement_stats()
+
+func update_movement_stats() -> void:
+	speed = base_speed * stats_multiplier
+	acceleration = base_acceleration * stats_multiplier
+	max_speedX = base_max_speedX * stats_multiplier
+	max_speedY = base_max_speedY * stats_multiplier
+	jump_force = base_jump_force * stats_multiplier
+	ice_acceleration = base_ice_acceleration * stats_multiplier
+	wall_slide_speed = base_wall_slide_speed * stats_multiplier
+	wall_pushback = base_wall_pushback * stats_multiplier
+	dash_speed = base_dash_speed * stats_multiplier
+
+### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
+### Stuff I still need to do:
+# Make sure particles are in the right places and are scaled
+# Make it so you stop growing when you gonna collide with platforms
+
+# Go into code version history and add stuff to work log for before I made it
+# possibly use getters instead of update_movement_stats
+
+#endregion
 #region Camera
 func resize_camera() -> void:
 	var delta = get_process_delta_time()
-	var target_zoom_vector = Vector2(base_zoom, base_zoom)
+	var target_zoom = base_zoom / stats_multiplier
+	var target_zoom_vector = Vector2(target_zoom, target_zoom)
 	camera.zoom = camera.zoom.lerp(target_zoom_vector, 5.0 * delta)
 	if flip_camera_with_gravity:
 		camera.rotation = lerp_angle(camera.rotation, player_visuals.rotation, 10.0 * delta)
@@ -446,12 +539,9 @@ func die() -> void:
 	if not has_flashed_red:
 		flash_red()
 		return
-		
 	is_dead = true
-	
 	if death_tween and death_tween.is_valid():
 		death_tween.kill()
-		
 	death_tween = create_tween()
 	death_tween.tween_property(self, "modulate:a", 0, 0.4)
 	death_tween.chain().tween_callback(func():
@@ -465,12 +555,12 @@ func die() -> void:
 			push_warning("Respawn point is missing or invalid")
 			global_position = Vector2.ZERO
 	)
-	death_tween.chain().set_parallel(true)
+	death_tween.set_parallel(true)
 	death_tween.tween_property(self, "modulate:a", 1, 0.6)
-	death_tween.chain().tween_callback(func():
-		is_dead = false
-		has_flashed_red = false
-	)
+	death_tween.tween_callback(func(): initiate_size_change(default_size, 0.4))
+	await death_tween.finished
+	has_flashed_red = false
+	is_dead = false
 
 func flash_red() -> void:
 	cleanup_flash_box()
@@ -522,7 +612,6 @@ func freeze_player() -> void:
 	wall_slide_particles.emitting = false
 	is_rotating = false
 	player_visuals.visible = true
-	
 	cleanup_flash_box()
 	cleanup_phase_copy()
 
