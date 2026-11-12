@@ -201,11 +201,14 @@ func _physics_process(delta: float) -> void:
 	handle_jump_input()
 	handle_horizontal_movement(delta, input_direction)
 	handle_size_change(delta)
+	print("before move_and_slide: are you colliding?: ", move_and_collide(Vector2.ZERO, true) != null)
 	move_and_slide()
-	if test_move(global_transform, Vector2.ZERO): 
+	print("after move_and_slide: are you colliding?: ", move_and_collide(Vector2.ZERO, true) != null)
+	if move_and_collide(Vector2.ZERO, true):
+		print("you died")
 		die()
 	resize_camera()
-	if Input.is_action_just_pressed("restart"): 
+	if Input.is_action_just_pressed("restart"):
 		die()
 
 func handle_timers(delta: float) -> void:
@@ -462,9 +465,9 @@ func handle_tap(key: String) -> void:
 #endregion
 #region Size Change
 func handle_size_change(delta):
-	if not changing_size:
+	if not changing_size and can_change_size:
 		if Input.is_action_just_pressed("big scale up"):
-			initiate_size_change(2.0)
+			initiate_size_change(3.0)
 		elif Input.is_action_just_pressed("revert scale"):
 			initiate_size_change(default_size)
 		elif Input.is_action_pressed("grow"):
@@ -488,6 +491,7 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 	
 	changing_size = true
 	size_change_tween = create_tween()
+	size_change_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
 	size_change_tween.tween_method(
 		func(progress): _apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
 	size_change_tween.set_trans(Tween.TRANS_CUBIC)
@@ -495,10 +499,22 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 	size_change_tween.tween_callback(func(): changing_size = false)
 	
 func _apply_scale_step(progress, start_scale, target_scale):
+	print("start of _apply_scale_step")
+	var og_scale = scale
+	var og_hitbox_height = hitbox_height
 	var next_scale = start_scale.lerp(target_scale, progress)
-	### need to test clipping into platforms here
+	print("pretest: did you collide?: ", move_and_collide(Vector2.ZERO, true) != null)
 	scale = next_scale
 	hitbox_height = original_hitbox_height * scale[1]
+	print("posttest: did you collide?: ", move_and_collide(Vector2.ZERO, true) != null)
+	if move_and_collide(Vector2.ZERO, true) and not is_dead:
+		scale = og_scale
+		hitbox_height = og_hitbox_height
+		print("reset size")
+		print("Now do you collide?: ", move_and_collide(Vector2.ZERO, true) != null)
+		cleanup_size_change_tween()
+		changing_size = false
+		return
 	stats_multiplier = lerp(1.0, scale[0], stats_multiplier_weight)
 	update_movement_stats()
 
