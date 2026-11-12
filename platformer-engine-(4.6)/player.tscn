@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://bia2stu0ihjki"]
+
+[ext_resource type="Script" uid="uid://dstnyl40m2ge5" path="res://player.gd" id="1_onrkg"]
+
+[sub_resource type="Curve" id="Curve_onrkg"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_i3pqv"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_4flbx"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_onrkg"]
+size = Vector2(50, 50)
+
+[node name="Player" type="CharacterBody2D" unique_id=934229367]
+script = ExtResource("1_onrkg")
+
+[node name="TestRect" type="ColorRect" parent="." unique_id=1561195534]
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 4.0
+offset_bottom = 4.0
+
+[node name="ParticleEffects" type="Node2D" parent="." unique_id=1560011605]
+
+[node name="JumpParticles" type="CPUParticles2D" parent="ParticleEffects" unique_id=90237339]
+emitting = false
+amount = 25
+one_shot = true
+explosiveness = 1.0
+spread = 150.0
+gravity = Vector2(0, 500)
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+scale_amount_min = 5.0
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_onrkg")
+
+[node name="WallSlideParticles" type="CPUParticles2D" parent="ParticleEffects" unique_id=631096762]
+position = Vector2(0, -25)
+emitting = false
+amount = 25
+direction = Vector2(0, -1)
+gravity = Vector2(0, 200)
+initial_velocity_min = 20.0
+initial_velocity_max = 80.0
+scale_amount_min = 5.0
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_i3pqv")
+
+[node name="DashParticles" type="CPUParticles2D" parent="ParticleEffects" unique_id=1350812511]
+position = Vector2(0, -25)
+emitting = false
+amount = 50
+lifetime = 0.5
+emission_shape = 3
+emission_rect_extents = Vector2(5, 15)
+gravity = Vector2(0, 0)
+initial_velocity_min = 20.0
+initial_velocity_max = 30.0
+scale_amount_min = 5.0
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_4flbx")
+
+[node name="PlayerVisuals" type="Node2D" parent="." unique_id=854749690]
+position = Vector2(0, -25)
+
+[node name="PlayerBack" type="Node2D" parent="PlayerVisuals" unique_id=1441934655]
+
+[node name="PlayerBorder" type="ColorRect" parent="PlayerVisuals/PlayerBack" unique_id=875193469]
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerBack" type="ColorRect" parent="PlayerVisuals/PlayerBack" unique_id=1702034303]
+offset_left = -23.0
+offset_top = -23.0
+offset_right = 23.0
+offset_bottom = 23.0
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerInternals" type="Node2D" parent="PlayerVisuals" unique_id=243059846]
+position = Vector2(2, 0)
+
+[node name="PlayerEyeLeft" type="ColorRect" parent="PlayerVisuals/PlayerInternals" unique_id=476991674]
+offset_left = -10.0
+offset_top = -15.0
+offset_right = -5.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerEyeRight" type="ColorRect" parent="PlayerVisuals/PlayerInternals" unique_id=242545681]
+offset_left = 5.0
+offset_top = -15.0
+offset_right = 10.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerMouth" type="ColorRect" parent="PlayerVisuals/PlayerInternals" unique_id=1982172598]
+offset_left = -15.0
+offset_top = 10.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerMouthLeft" type="ColorRect" parent="PlayerVisuals/PlayerInternals" unique_id=1867801374]
+offset_left = -15.0
+offset_top = 5.0
+offset_right = -10.0
+offset_bottom = 10.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerMouthRight" type="ColorRect" parent="PlayerVisuals/PlayerInternals" unique_id=1600594817]
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 15.0
+offset_bottom = 10.0
+color = Color(0, 0, 0, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerHitbox" type="CollisionShape2D" parent="." unique_id=1866067010]
+position = Vector2(0, -25)
+shape = SubResource("RectangleShape2D_onrkg")

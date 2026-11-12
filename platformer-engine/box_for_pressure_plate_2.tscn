@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://brx37h22t6lka"]
+
+[ext_resource type="Script" uid="uid://3uf1ti0pj3bv" path="res://moveable.gd" id="1_xgg62"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uue8y"]
+size = Vector2(124, 128.25)
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_aac4l"]
+
+[node name="box for pressure plate2" type="CharacterBody2D" unique_id=620289900]
+script = ExtResource("1_xgg62")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1847832288]
+position = Vector2(10.680786, -14.782227)
+shape = SubResource("RectangleShape2D_uue8y")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2104630372]
+modulate = Color(0.26200193, 0.6573341, 0.9258727, 1)
+position = Vector2(10.180779, -14.407212)
+scale = Vector2(123.22166, 127.000175)
+skew = 0.0017453292
+texture = SubResource("CanvasTexture_aac4l")

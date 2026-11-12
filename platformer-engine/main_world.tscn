@@ -114,6 +114,7 @@ position = Vector2(815, 10)
 scale = Vector2(2, 1)
 
 [node name="Platform14" parent="Platforms" unique_id=249457576 instance=ExtResource("2_uoqbt")]
+modulate = Color(1, 0.2901961, 0.047058824, 1)
 position = Vector2(578, 377)
 scale = Vector2(2, 2)
 
