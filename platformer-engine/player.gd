@@ -74,7 +74,7 @@ var hitbox_height: float
 
 @export_group("Size Settings")
 @export var can_change_size := true
-@export var starting_size := 1.0
+@export var default_size := 1.0
 @export var growth_rate := 1.5
 @export var stats_multiplier_weight := 0.25
 # Controls how strongly movement stats and camera scale with size
@@ -86,7 +86,7 @@ var hitbox_height: float
 @export var particles := true
 @export var phase_rotate := false
 #endregion
-#region Internal Variables
+#region Internal Variabless
 # Stored Base Variables
 var speed = base_speed
 var acceleration = base_acceleration
@@ -141,8 +141,12 @@ var is_dead := false
 var just_respawned := true
 var has_flashed_red := false
 var active_flash_box: ColorRect = null
+
+# Size Change
+var changing_size := false
 #endregion
 #region Memory Cleanup
+# This is all just-in-case memory cleanup, but I think they're generally not really needed
 func cleanup_phase_copy() -> void:
 	if is_instance_valid(phase_copy):
 		phase_copy.queue_free()
@@ -174,6 +178,7 @@ func _ready() -> void:
 		global_position.y -= hitbox_height
 	player_visuals.rotation = 0.0 if normal_gravity else PI
 	camera.zoom = Vector2(base_zoom, base_zoom)
+	initiate_size_change(default_size, 0.1)
 
 func _physics_process(delta: float) -> void:
 	if is_dead or not can_move: return
@@ -457,33 +462,37 @@ func handle_tap(key: String) -> void:
 #endregion
 #region Size Change
 func handle_size_change(delta):
-	if Input.is_action_just_pressed("big scale up"):
-		initiate_size_change(2.0)
-	elif Input.is_action_just_pressed("revert scale"):
-		initiate_size_change(starting_size)
-	elif Input.is_action_pressed("grow"):
-		initiate_size_change(clamp(scale.x+growth_rate*delta, min_size, max_size))
-	elif Input.is_action_pressed("shrink"):
-		initiate_size_change(clamp(scale.x-growth_rate*delta, min_size, max_size))
+	if not changing_size:
+		if Input.is_action_just_pressed("big scale up"):
+			initiate_size_change(2.0)
+		elif Input.is_action_just_pressed("revert scale"):
+			initiate_size_change(default_size)
+		elif Input.is_action_pressed("grow"):
+			initiate_size_change(clamp(scale.x+growth_rate*delta, min_size, max_size), 0)
+		elif Input.is_action_pressed("shrink"):
+			initiate_size_change(clamp(scale.x-growth_rate*delta, min_size, max_size), 0)
 
-func initiate_size_change(target_scale_multiplier: float):
+func initiate_size_change(target_scale_multiplier: float, custom_duration: float = -1.0):
 	cleanup_size_change_tween()
 	var start_scale = scale
 	if not start_scale[0] == start_scale[1]:
 		push_error("Error: player scale stretched")
 		return
 	var target_scale = Vector2(target_scale_multiplier, target_scale_multiplier)
-	var size_difference = abs(target_scale_multiplier - start_scale[0])
-	var dynamic_growth_rate = pow(size_difference, (1.0/3.0)) * growth_rate
-	var active_growth_rate = max(growth_rate, dynamic_growth_rate)
-	var duration = size_difference / active_growth_rate
+	var duration = custom_duration
+	if custom_duration < 0:
+		var size_difference = abs(target_scale_multiplier - start_scale[0])
+		var dynamic_growth_rate = pow(size_difference, (1.0/3.0)) * growth_rate
+		var active_growth_rate = max(growth_rate, dynamic_growth_rate)
+		duration = size_difference / active_growth_rate
 	
+	changing_size = true
 	size_change_tween = create_tween()
 	size_change_tween.tween_method(
-		func(progress): _apply_scale_step(progress, start_scale, target_scale), 
-						0.0, 1.0, duration)
+		func(progress): _apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
 	size_change_tween.set_trans(Tween.TRANS_CUBIC)
 	size_change_tween.set_ease(Tween.EASE_OUT)
+	size_change_tween.tween_callback(func(): changing_size = false)
 	
 func _apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
@@ -508,7 +517,6 @@ func update_movement_stats() -> void:
 ### Stuff I still need to do:
 # Make sure particles are in the right places and are scaled
 # Make it so you stop growing when you gonna collide with platforms
-# Make size reset on death and game start
 
 # Go into code version history and add stuff to work log for before I made it
 # possibly use getters instead of update_movement_stats
@@ -531,12 +539,9 @@ func die() -> void:
 	if not has_flashed_red:
 		flash_red()
 		return
-	
 	is_dead = true
-	
 	if death_tween and death_tween.is_valid():
 		death_tween.kill()
-		
 	death_tween = create_tween()
 	death_tween.tween_property(self, "modulate:a", 0, 0.4)
 	death_tween.chain().tween_callback(func():
@@ -550,12 +555,12 @@ func die() -> void:
 			push_warning("Respawn point is missing or invalid")
 			global_position = Vector2.ZERO
 	)
-	death_tween.chain().set_parallel(true)
+	death_tween.set_parallel(true)
 	death_tween.tween_property(self, "modulate:a", 1, 0.6)
-	death_tween.chain().tween_callback(func():
-		is_dead = false
-		has_flashed_red = false
-	)
+	death_tween.tween_callback(func(): initiate_size_change(default_size, 0.4))
+	await death_tween.finished
+	has_flashed_red = false
+	is_dead = false
 
 func flash_red() -> void:
 	cleanup_flash_box()
