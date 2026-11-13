@@ -496,7 +496,7 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 func _apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
 	$PlayerHitbox.shape.size *= (next_scale / scale)
-	if next_scale.x > scale.x and not is_dead and test_move(global_transform, Vector2.ZERO):
+	if next_scale.x > scale.x and not is_dead and move_and_collide(Vector2.ZERO, true):
 		cleanup_size_change_tween()
 		changing_size = false
 		$PlayerHitbox.shape.size /= (next_scale / scale)
