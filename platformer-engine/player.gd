@@ -462,7 +462,7 @@ func handle_tap(key: String) -> void:
 #endregion
 #region Size Change
 func handle_size_change(delta):
-	if not changing_size:
+	if can_change_size and not changing_size:
 		if Input.is_action_just_pressed("big scale up"):
 			initiate_size_change(3.0)
 		elif Input.is_action_just_pressed("revert scale"):
