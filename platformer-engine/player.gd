@@ -201,11 +201,10 @@ func _physics_process(delta: float) -> void:
 	handle_jump_input()
 	handle_horizontal_movement(delta, input_direction)
 	handle_size_change(delta)
-	print("before move_and_slide: are you colliding?: ", move_and_collide(Vector2.ZERO, true) != null)
 	move_and_slide()
-	print("after move_and_slide: are you colliding?: ", move_and_collide(Vector2.ZERO, true) != null)
+	# Still checked every frame, including while growing, so moving platforms can crush you.
+	# Growth itself never leaves you overlapping (see _apply_scale_step), so this only fires on real crushes.
 	if move_and_collide(Vector2.ZERO, true):
-		print("you died")
 		die()
 	resize_camera()
 	if Input.is_action_just_pressed("restart"):
@@ -499,24 +498,80 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 	size_change_tween.tween_callback(func(): changing_size = false)
 	
 func _apply_scale_step(progress, start_scale, target_scale):
-	print("start of _apply_scale_step")
-	var og_scale = scale
-	var og_hitbox_height = hitbox_height
-	var next_scale = start_scale.lerp(target_scale, progress)
-	print("pretest: did you collide?: ", move_and_collide(Vector2.ZERO, true) != null)
-	scale = next_scale
-	hitbox_height = original_hitbox_height * scale[1]
-	print("posttest: did you collide?: ", move_and_collide(Vector2.ZERO, true) != null)
-	if move_and_collide(Vector2.ZERO, true) and not is_dead:
-		scale = og_scale
-		hitbox_height = og_hitbox_height
-		print("reset size")
-		print("Now do you collide?: ", move_and_collide(Vector2.ZERO, true) != null)
+	if is_dead: return
+	var old_scale: Vector2 = scale
+	var next_scale: Vector2 = start_scale.lerp(target_scale, progress)
+	if next_scale.x > old_scale.x and not _try_grow_to(next_scale):
+		# Blocked on both sides of an axis (wall-wall or floor-ceiling): stop growing, don't die
 		cleanup_size_change_tween()
 		changing_size = false
 		return
-	stats_multiplier = lerp(1.0, scale[0], stats_multiplier_weight)
+	scale = next_scale
+	hitbox_height = original_hitbox_height * scale.y
+	stats_multiplier = lerp(1.0, scale.x, stats_multiplier_weight)
 	update_movement_stats()
+
+# Tries to grow to new_scale, shifting the player away from anything in the way
+# (e.g. off a single wall, or down from a ceiling when in the air).
+# Returns false (scale/position untouched) only if there isn't enough room on an axis,
+# i.e. something on BOTH sides (wall + wall, or floor + ceiling).
+func _try_grow_to(new_scale: Vector2) -> bool:
+	var rect := get_hitbox_rect()
+	var d_scale: Vector2 = new_scale - scale
+	# How far each edge of the hitbox moves outward
+	var grow_left: float = -rect.position.x * d_scale.x
+	var grow_right: float = rect.end.x * d_scale.x
+	var grow_up: float = -rect.position.y * d_scale.y
+	var grow_down: float = rect.end.y * d_scale.y
+	
+	var shift_x = _get_growth_shift(Vector2.LEFT, grow_left, grow_right)
+	var shift_y = _get_growth_shift(Vector2.UP, grow_up, grow_down)
+	if shift_x == null or shift_y == null:
+		return false
+	
+	var old_scale: Vector2 = scale
+	var old_position: Vector2 = global_position
+	scale = new_scale
+	global_position += Vector2(shift_x, shift_y)
+	# Safety net for odd geometry (slopes, corners): never grow into something
+	if move_and_collide(Vector2.ZERO, true):
+		scale = old_scale
+		global_position = old_position
+		return false
+	return true
+
+# Checks one axis. neg_dir is the negative side's direction (LEFT or UP).
+# Returns how far to shift along the axis (positive = away from the neg side),
+# or null if there's not enough total room on this axis.
+func _get_growth_shift(neg_dir: Vector2, grow_neg: float, grow_pos: float):
+	var needed: float = grow_neg + grow_pos
+	if needed <= 0.0:
+		return 0.0
+	var free_neg := _free_distance(neg_dir, needed)
+	var free_pos := _free_distance(-neg_dir, needed)
+	if free_neg + free_pos < needed - 0.001:
+		return null  # blocked on both sides
+	if free_neg < grow_neg:
+		return grow_neg - free_neg  # wall/ceiling on the neg side: shift away from it
+	if free_pos < grow_pos:
+		return -(grow_pos - free_pos)  # wall/floor on the pos side: shift away from it
+	return 0.0
+
+# How far the player (at its current size) could move in dir, up to max_distance
+func _free_distance(dir: Vector2, max_distance: float) -> float:
+	var collision := move_and_collide(dir * max_distance, true)
+	if collision == null:
+		return max_distance
+	return collision.get_travel().length()
+
+# Hitbox rect in the player's local (unscaled) space. Uses the live child position,
+# so it's correct in inverted gravity too.
+func get_hitbox_rect() -> Rect2:
+	for child in get_children():
+		if child is CollisionShape2D and child.shape:
+			var r: Rect2 = child.shape.get_rect()
+			return Rect2(child.position + r.position, r.size)
+	return Rect2(-25.0, -original_hitbox_height, 50.0, original_hitbox_height)
 
 func update_movement_stats() -> void:
 	speed = base_speed * stats_multiplier
@@ -532,7 +587,6 @@ func update_movement_stats() -> void:
 ### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
 ### Stuff I still need to do:
 # Make sure particles are in the right places and are scaled
-# Make it so you stop growing when you gonna collide with platforms
 
 # Go into code version history and add stuff to work log for before I made it
 # possibly use getters instead of update_movement_stats
