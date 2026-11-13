@@ -202,10 +202,10 @@ func _physics_process(delta: float) -> void:
 	handle_horizontal_movement(delta, input_direction)
 	handle_size_change(delta)
 	move_and_slide()
-	if test_move(global_transform, Vector2.ZERO): 
+	if move_and_collide(Vector2.ZERO, true):
 		die()
 	resize_camera()
-	if Input.is_action_just_pressed("restart"): 
+	if Input.is_action_just_pressed("restart"):
 		die()
 
 func handle_timers(delta: float) -> void:
@@ -464,7 +464,7 @@ func handle_tap(key: String) -> void:
 func handle_size_change(delta):
 	if not changing_size:
 		if Input.is_action_just_pressed("big scale up"):
-			initiate_size_change(2.0)
+			initiate_size_change(3.0)
 		elif Input.is_action_just_pressed("revert scale"):
 			initiate_size_change(default_size)
 		elif Input.is_action_pressed("grow"):
@@ -485,7 +485,6 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 		var dynamic_growth_rate = pow(size_difference, (1.0/3.0)) * growth_rate
 		var active_growth_rate = max(growth_rate, dynamic_growth_rate)
 		duration = size_difference / active_growth_rate
-	
 	changing_size = true
 	size_change_tween = create_tween()
 	size_change_tween.tween_method(
@@ -493,10 +492,16 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 	size_change_tween.set_trans(Tween.TRANS_CUBIC)
 	size_change_tween.set_ease(Tween.EASE_OUT)
 	size_change_tween.tween_callback(func(): changing_size = false)
-	
+
 func _apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
-	### need to test clipping into platforms here
+	$PlayerHitbox.shape.size *= (next_scale / scale)
+	if next_scale.x > scale.x and not is_dead and test_move(global_transform, Vector2.ZERO):
+		cleanup_size_change_tween()
+		changing_size = false
+		$PlayerHitbox.shape.size /= (next_scale / scale)
+		return
+	$PlayerHitbox.shape.size /= (next_scale / scale)
 	scale = next_scale
 	hitbox_height = original_hitbox_height * scale[1]
 	stats_multiplier = lerp(1.0, scale[0], stats_multiplier_weight)
@@ -512,15 +517,6 @@ func update_movement_stats() -> void:
 	wall_slide_speed = base_wall_slide_speed * stats_multiplier
 	wall_pushback = base_wall_pushback * stats_multiplier
 	dash_speed = base_dash_speed * stats_multiplier
-
-### IMPT: make sure to set hitbox height and player scale and stuff to the starting size onReady
-### Stuff I still need to do:
-# Make sure particles are in the right places and are scaled
-# Make it so you stop growing when you gonna collide with platforms
-
-# Go into code version history and add stuff to work log for before I made it
-# possibly use getters instead of update_movement_stats
-
 #endregion
 #region Camera
 func resize_camera() -> void:
