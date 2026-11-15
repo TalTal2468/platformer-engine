@@ -484,7 +484,7 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 		var size_difference = abs(target_scale_multiplier - start_scale[0])
 		var dynamic_growth_rate = pow(size_difference, (1.0/3.0)) * growth_rate
 		var active_growth_rate = max(growth_rate, dynamic_growth_rate)
-		duration = size_difference / active_growth_rate
+		duration = size_difference / active_growth_rate / 2
 	changing_size = true
 	size_change_tween = create_tween()
 	size_change_tween.tween_method(
