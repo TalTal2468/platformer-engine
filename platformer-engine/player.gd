@@ -495,14 +495,33 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 
 func _apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
-	$PlayerHitbox.shape.size *= (next_scale / scale)
-	if next_scale.x > scale.x and not is_dead and move_and_collide(Vector2.ZERO, true):
+	if next_scale.x > scale.x and not is_dead:
+		$PlayerHitbox.shape.size *= (next_scale / scale)
+		var colliding = move_and_collide(Vector2.ZERO, true)
 		$PlayerHitbox.shape.size /= (next_scale / scale)
-		cleanup_size_change_tween()
-		changing_size = false
-		return
-	$PlayerHitbox.shape.size /= (next_scale / scale)
-	scale = next_scale
+		if colliding:
+			_apply_scale(_find_max_valid_scale(scale.x, next_scale.x))
+			cleanup_size_change_tween()
+			changing_size = false
+			return
+	_apply_scale(next_scale.x)
+
+# This function does a binary search to find a scale in between current and target that doesn't collide
+# It only repeats 4 times because more may find a scale slightly too big
+func _find_max_valid_scale(current_scale: float, target_scale: float) -> float:
+	var best_scale = current_scale
+	for i in range(4):
+		var middle_val = (current_scale + target_scale) / 2
+		var test_scale_vector = Vector2(middle_val, middle_val)
+		$PlayerHitbox.shape.size *= (test_scale_vector / scale)
+		var colliding = move_and_collide(Vector2.ZERO, true)
+		$PlayerHitbox.shape.size /= (test_scale_vector / scale)
+		if not colliding: best_scale = middle_val; current_scale = middle_val
+		else: target_scale = middle_val
+	return best_scale
+
+func _apply_scale(new_scale_val: float) -> void:
+	scale = Vector2(new_scale_val, new_scale_val)
 	hitbox_height = original_hitbox_height * scale[1]
 	stats_multiplier = lerp(1.0, scale[0], stats_multiplier_weight)
 	update_movement_stats()
