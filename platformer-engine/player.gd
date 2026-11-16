@@ -434,7 +434,10 @@ func dash(delta: float) -> void:
 		velocity.x = clamp(velocity.x, -max_speedX, max_speedX)
 		stop_dash_effect(0.2)
 		
+	var pre_move_vel_x = velocity.x
 	move_and_slide()
+	reset_velocity_x(pre_move_vel_x)
+	push_stuff()
 
 func start_dash(direction: float) -> void:
 	is_dashing = true
@@ -551,8 +554,7 @@ func push_stuff() -> void:
 		var collision = get_slide_collision(i)
 		var collider := collision.get_collider()
 		if collider is Pushable and collision.get_normal().y == 0.0:
-			collider.velocity.x = velocity.x
-
+			collider.velocity.x = velocity.x / collider.scale[0]
 #endregion
 #region Camera
 func resize_camera() -> void:
