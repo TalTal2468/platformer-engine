@@ -1,7 +1,6 @@
 class_name Pushable
 extends CharacterBody2D
 
-@export_group("Basic Movement")
 @export var gravity := 1800
 @export var max_speedX := 800 / scale[0]
 @export var max_speedY := 1000
