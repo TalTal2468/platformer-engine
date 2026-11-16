@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bia2stu0ihjki" path="res://player.tscn" id="1_itk02"]
 [ext_resource type="PackedScene" uid="uid://bwdf1fw23nl17" path="res://platform.tscn" id="2_uoqbt"]
 [ext_resource type="PackedScene" uid="uid://bvouucd4vrvkk" path="res://spike.tscn" id="3_43o5b"]
+[ext_resource type="PackedScene" uid="uid://msor5s8flqan" path="res://box.tscn" id="4_3etub"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -138,6 +139,13 @@ rotation = 1.5707964
 
 [node name="SpikePath" parent="Spikes/Spike2" index="0" unique_id=513896751]
 curve = SubResource("Curve2D_whfra")
+
+[node name="Box" parent="." unique_id=1462277712 instance=ExtResource("4_3etub")]
+position = Vector2(273, 398)
+
+[node name="Box2" parent="." unique_id=2059929073 instance=ExtResource("4_3etub")]
+position = Vector2(1445, 296)
+scale = Vector2(2, 2)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]

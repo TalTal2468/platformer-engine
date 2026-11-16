@@ -201,7 +201,10 @@ func _physics_process(delta: float) -> void:
 	handle_jump_input()
 	handle_horizontal_movement(delta, input_direction)
 	handle_size_change(delta)
+	var pre_move_vel_x = velocity.x
 	move_and_slide()
+	reset_velocity_x(pre_move_vel_x)
+	push_stuff()
 	if move_and_collide(Vector2.ZERO, true):
 		die()
 	resize_camera()
@@ -536,6 +539,20 @@ func update_movement_stats() -> void:
 	wall_slide_speed = base_wall_slide_speed * stats_multiplier
 	wall_pushback = base_wall_pushback * stats_multiplier
 	dash_speed = base_dash_speed * stats_multiplier
+#endregion
+#region Pushables
+func reset_velocity_x(pre_move_vel_x: float) -> void:
+	for i in get_slide_collision_count():
+		if get_slide_collision(i).get_collider() is Pushable:
+			velocity.x = pre_move_vel_x
+
+func push_stuff() -> void:
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		var collider := collision.get_collider()
+		if collider is Pushable and collision.get_normal().y == 0.0:
+			collider.velocity.x = velocity.x
+
 #endregion
 #region Camera
 func resize_camera() -> void:
