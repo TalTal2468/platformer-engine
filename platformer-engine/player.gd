@@ -554,7 +554,7 @@ func push_stuff() -> void:
 		var collision = get_slide_collision(i)
 		var collider := collision.get_collider()
 		if collider is Pushable and collision.get_normal().y == 0.0:
-			collider.velocity.x = velocity.x / collider.scale[0]
+			collider.velocity.x = velocity.x * min(scale[0] / collider.scale[0], 1.0)
 #endregion
 #region Camera
 func resize_camera() -> void:
