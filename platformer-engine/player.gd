@@ -167,6 +167,7 @@ func cleanup_size_change_tween() -> void:
 #endregion
 #region Engine Callbacks
 func _ready() -> void:
+	add_to_group("player")
 	original_hitbox_height = get_hitbox_height()
 	hitbox_height = get_hitbox_height()
 	for child in get_children():
@@ -554,9 +555,10 @@ func push_stuff(delta) -> void:
 		var collision = get_slide_collision(i)
 		var collider := collision.get_collider()
 		if collider is Pushable and abs(collision.get_normal().x) == 1.0 and collision.get_normal().y == 0.0:
-			global_position.x += collider.push(velocity.x * min(scale[0] / collider.scale[0], 1.0), delta)
-			return
-
+			var size_ratio = min(scale[0] / collider.scale[0], 1.0)
+			var velocity_multiplier = lerp(1.0, size_ratio, collider.scale_weight)
+			var new_velocity = velocity.x * velocity_multiplier
+			global_position.x += collider.push(new_velocity, delta)
 #endregion
 #region Camera
 func resize_camera() -> void:

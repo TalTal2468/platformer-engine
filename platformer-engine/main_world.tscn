@@ -142,8 +142,12 @@ curve = SubResource("Curve2D_whfra")
 position = Vector2(250, 400)
 
 [node name="Box2" parent="Boxes" unique_id=2059929073 instance=ExtResource("4_3etub")]
-position = Vector2(1450, 400)
+position = Vector2(1420, 400)
 scale = Vector2(2, 2)
+
+[node name="Box3" parent="Boxes" unique_id=483831957 instance=ExtResource("4_3etub")]
+position = Vector2(1850, 320)
+scale = Vector2(5, 5)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]
