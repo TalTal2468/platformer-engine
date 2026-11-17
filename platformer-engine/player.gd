@@ -548,7 +548,8 @@ func update_movement_stats() -> void:
 func reset_velocity_x(pre_move_vel_x: float) -> void:
 	for i in get_slide_collision_count():
 		if get_slide_collision(i).get_collider() is Pushable:
-			velocity.x = pre_move_vel_x
+			if is_on_floor(): velocity.x = pre_move_vel_x
+			else: velocity.x = pre_move_vel_x / 1.25
 
 func push_stuff(delta) -> void:
 	for i in get_slide_collision_count():
