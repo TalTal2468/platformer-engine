@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://msor5s8flqan"]
+
+[ext_resource type="Script" uid="uid://di3a0k7hfqysl" path="res://box.gd" id="1_g2tbl"]
+
+[sub_resource type="Curve" id="Curve_mkehw"]
+_data = [Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 1
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g2tbl"]
+size = Vector2(50, 50)
+
+[node name="Box" type="CharacterBody2D" unique_id=1462277712]
+script = ExtResource("1_g2tbl")
+
+[node name="BoxVisuals" type="Node2D" parent="." unique_id=927030403]
+
+[node name="BoxBackground" type="ColorRect" parent="BoxVisuals" unique_id=1465718703]
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+color = Color(0.6862745, 0.39215687, 0.09803922, 1)
+
+[node name="BoxTopLine" type="Line2D" parent="BoxVisuals" unique_id=1655916158]
+points = PackedVector2Array(-23, -23, 23, -23)
+width = 4.0
+width_curve = SubResource("Curve_mkehw")
+default_color = Color(0.6862745, 0.29411766, 0.09803922, 1)
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[node name="BoxBottomLine" type="Line2D" parent="BoxVisuals" unique_id=1528256707]
+points = PackedVector2Array(-23, 23, 23, 23)
+width = 4.0
+width_curve = SubResource("Curve_mkehw")
+default_color = Color(0.6862745, 0.29411766, 0.09803922, 1)
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[node name="BoxLeftLine" type="Line2D" parent="BoxVisuals" unique_id=1729355130]
+position = Vector2(2, 7)
+points = PackedVector2Array(-25, 16, -25, -30)
+width = 4.0
+width_curve = SubResource("Curve_mkehw")
+default_color = Color(0.6862745, 0.29411766, 0.09803922, 1)
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[node name="BoxRightLine" type="Line2D" parent="BoxVisuals" unique_id=1494787604]
+position = Vector2(-3, -9)
+points = PackedVector2Array(26, -14, 26, 32)
+width = 4.0
+width_curve = SubResource("Curve_mkehw")
+default_color = Color(0.6862745, 0.29411766, 0.09803922, 1)
+begin_cap_mode = 1
+end_cap_mode = 1
+
+[node name="BoxDiagonalLine1" type="Line2D" parent="BoxVisuals" unique_id=1554676952]
+position = Vector2(1, 10)
+points = PackedVector2Array(-24, -33, 22, 13)
+width = 4.0
+width_curve = SubResource("Curve_mkehw")
+default_color = Color(0.6862745, 0.29411766, 0.09803922, 1)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="BoxDiagonalLine2" type="Line2D" parent="BoxVisuals" unique_id=745286787]
+position = Vector2(-13, 13)
+points = PackedVector2Array(-10, 10, 36, -36)
+width = 4.0
+width_curve = SubResource("Curve_mkehw")
+default_color = Color(0.6862745, 0.29411766, 0.09803922, 1)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="BoxHitbox" type="CollisionShape2D" parent="." unique_id=1711102835]
+shape = SubResource("RectangleShape2D_g2tbl")
