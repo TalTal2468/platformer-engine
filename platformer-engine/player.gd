@@ -204,9 +204,9 @@ func _physics_process(delta: float) -> void:
 	var pre_move_vel_x = velocity.x
 	move_and_slide()
 	reset_velocity_x(pre_move_vel_x)
-	push_stuff()
 	if move_and_collide(Vector2.ZERO, true):
 		die()
+	push_stuff(delta)
 	resize_camera()
 	if Input.is_action_just_pressed("restart"):
 		die()
@@ -437,7 +437,7 @@ func dash(delta: float) -> void:
 	var pre_move_vel_x = velocity.x
 	move_and_slide()
 	reset_velocity_x(pre_move_vel_x)
-	push_stuff()
+	push_stuff(delta)
 
 func start_dash(direction: float) -> void:
 	is_dashing = true
@@ -549,12 +549,14 @@ func reset_velocity_x(pre_move_vel_x: float) -> void:
 		if get_slide_collision(i).get_collider() is Pushable:
 			velocity.x = pre_move_vel_x
 
-func push_stuff() -> void:
+func push_stuff(delta) -> void:
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
 		var collider := collision.get_collider()
-		if collider is Pushable and collision.get_normal().y == 0.0:
-			collider.velocity.x = velocity.x * min(scale[0] / collider.scale[0], 1.0)
+		if collider is Pushable and abs(collision.get_normal().x) == 1.0 and collision.get_normal().y == 0.0:
+			global_position.x += collider.push(velocity.x * min(scale[0] / collider.scale[0], 1.0), delta)
+			return
+
 #endregion
 #region Camera
 func resize_camera() -> void:

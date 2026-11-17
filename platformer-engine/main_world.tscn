@@ -109,22 +109,18 @@ position = Vector2(815, 10)
 scale = Vector2(2, 1)
 
 [node name="Platform14" parent="Platforms" unique_id=249457576 instance=ExtResource("2_uoqbt")]
-position = Vector2(578, 377)
-scale = Vector2(2, 2)
+position = Vector2(575, 350)
+scale = Vector2(4, 1)
 
 [node name="Platform15" parent="Platforms" unique_id=1400487626 instance=ExtResource("2_uoqbt")]
-position = Vector2(494, 272)
-scale = Vector2(2, 2)
+position = Vector2(500, 275)
+scale = Vector2(1, 2)
 
 [node name="Platform16" parent="Platforms" unique_id=551322297 instance=ExtResource("2_uoqbt")]
-position = Vector2(659, 272)
-scale = Vector2(2, 2)
+position = Vector2(650, 275)
+scale = Vector2(1, 2)
 
-[node name="Platform17" parent="Platforms" unique_id=1543793294 instance=ExtResource("2_uoqbt")]
-position = Vector2(655, 175)
-scale = Vector2(2, 2)
-
-[node name="Platform18" parent="Platforms" unique_id=1213054912 instance=ExtResource("2_uoqbt")]
+[node name="Platform17" parent="Platforms" unique_id=1213054912 instance=ExtResource("2_uoqbt")]
 position = Vector2(1650, -800)
 scale = Vector2(2, 2)
 
@@ -140,11 +136,13 @@ rotation = 1.5707964
 [node name="SpikePath" parent="Spikes/Spike2" index="0" unique_id=513896751]
 curve = SubResource("Curve2D_whfra")
 
-[node name="Box" parent="." unique_id=1462277712 instance=ExtResource("4_3etub")]
-position = Vector2(273, 398)
+[node name="Boxes" type="Node2D" parent="." unique_id=296948671]
 
-[node name="Box2" parent="." unique_id=2059929073 instance=ExtResource("4_3etub")]
-position = Vector2(1445, 296)
+[node name="Box" parent="Boxes" unique_id=1462277712 instance=ExtResource("4_3etub")]
+position = Vector2(250, 400)
+
+[node name="Box2" parent="Boxes" unique_id=2059929073 instance=ExtResource("4_3etub")]
+position = Vector2(1450, 400)
 scale = Vector2(2, 2)
 
 [editable path="Platforms/Platform11"]
