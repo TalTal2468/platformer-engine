@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bia2stu0ihjki" path="res://player.tscn" id="1_itk02"]
 [ext_resource type="PackedScene" uid="uid://bwdf1fw23nl17" path="res://platform.tscn" id="2_uoqbt"]
 [ext_resource type="PackedScene" uid="uid://bvouucd4vrvkk" path="res://spike.tscn" id="3_43o5b"]
+[ext_resource type="PackedScene" uid="uid://msor5s8flqan" path="res://box.tscn" id="4_3etub"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -95,9 +96,6 @@ rotation = -1.5647964
 [node name="PlatformVisuals&Hitbox" parent="Platforms/Platform11" index="1" unique_id=1390017336]
 rotation = -1.5647964
 
-[node name="Platform Visual" parent="Platforms/Platform11/PlatformVisuals&Hitbox" index="1" unique_id=1897999183]
-texture_filter = 1
-
 [node name="Platform12" parent="Platforms" unique_id=19157776 instance=ExtResource("2_uoqbt")]
 position = Vector2(900, -75)
 scale = Vector2(3, 1)
@@ -106,31 +104,23 @@ speed = 0.5
 [node name="PlatformPath" parent="Platforms/Platform12" index="0" unique_id=768050403]
 curve = SubResource("Curve2D_3etub")
 
-[node name="Platform Visual" parent="Platforms/Platform12/PlatformVisuals&Hitbox" parent_id_path=PackedInt32Array(19157776, 1390017336) index="1" unique_id=1897999183]
-texture_filter = 1
-
 [node name="Platform13" parent="Platforms" unique_id=1678461570 instance=ExtResource("2_uoqbt")]
 position = Vector2(815, 10)
 scale = Vector2(2, 1)
 
 [node name="Platform14" parent="Platforms" unique_id=249457576 instance=ExtResource("2_uoqbt")]
-modulate = Color(1, 0.2901961, 0.047058824, 1)
-position = Vector2(578, 377)
-scale = Vector2(2, 2)
+position = Vector2(575, 350)
+scale = Vector2(4, 1)
 
 [node name="Platform15" parent="Platforms" unique_id=1400487626 instance=ExtResource("2_uoqbt")]
-position = Vector2(494, 272)
-scale = Vector2(2, 2)
+position = Vector2(500, 275)
+scale = Vector2(1, 2)
 
 [node name="Platform16" parent="Platforms" unique_id=551322297 instance=ExtResource("2_uoqbt")]
-position = Vector2(659, 272)
-scale = Vector2(2, 2)
+position = Vector2(650, 275)
+scale = Vector2(1, 2)
 
-[node name="Platform17" parent="Platforms" unique_id=1543793294 instance=ExtResource("2_uoqbt")]
-position = Vector2(655, 175)
-scale = Vector2(2, 2)
-
-[node name="Platform18" parent="Platforms" unique_id=1213054912 instance=ExtResource("2_uoqbt")]
+[node name="Platform17" parent="Platforms" unique_id=1213054912 instance=ExtResource("2_uoqbt")]
 position = Vector2(1650, -800)
 scale = Vector2(2, 2)
 
@@ -145,6 +135,15 @@ rotation = 1.5707964
 
 [node name="SpikePath" parent="Spikes/Spike2" index="0" unique_id=513896751]
 curve = SubResource("Curve2D_whfra")
+
+[node name="Boxes" type="Node2D" parent="." unique_id=296948671]
+
+[node name="Box" parent="Boxes" unique_id=1462277712 instance=ExtResource("4_3etub")]
+position = Vector2(250, 400)
+
+[node name="Box2" parent="Boxes" unique_id=2059929073 instance=ExtResource("4_3etub")]
+position = Vector2(1450, 400)
+scale = Vector2(2, 2)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]
