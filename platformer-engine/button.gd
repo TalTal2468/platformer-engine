@@ -25,7 +25,7 @@ func _on_body_entered(body: Node2D) -> void:
 		if kill_player: player.die()
 
 func _on_body_exited(body: Node2D) -> void:
-	if (body is Player or body is Pushable) and pressed:
+	if (body is Player or body is Pushable) and not valid_presser() and pressed:
 		pressed = false
 		for button_child in get_children():
 			if button_child.has_method("on_release"):
