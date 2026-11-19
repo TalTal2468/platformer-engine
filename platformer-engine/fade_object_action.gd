@@ -3,7 +3,7 @@ extends Node
 @export var connected_objects: Node2D = null
 @export var start_objects_faded := false
 @export var dont_fade_hitbox := false
-@export var duration := 0.5
+@export var duration := 0.2
 
 var fade_out_tween: Tween = null
 var fade_in_tween: Tween = null
