@@ -495,19 +495,19 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 	changing_size = true
 	size_change_tween = create_tween()
 	size_change_tween.tween_method(
-		func(progress): _apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
+		func(progress): apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
 	size_change_tween.set_trans(Tween.TRANS_CUBIC)
 	size_change_tween.set_ease(Tween.EASE_OUT)
 	size_change_tween.tween_callback(func(): changing_size = false)
 
-func _apply_scale_step(progress, start_scale, target_scale):
+func apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
 	if next_scale.x > scale.x and not is_dead:
 		$PlayerHitbox.shape.size *= (next_scale / scale)
 		var colliding = move_and_collide(Vector2.ZERO, true)
 		$PlayerHitbox.shape.size /= (next_scale / scale)
 		if colliding:
-			_apply_scale(_find_max_valid_scale(scale.x, next_scale.x))
+			_apply_scale(find_max_valid_scale(scale.x, next_scale.x))
 			cleanup_size_change_tween()
 			changing_size = false
 			return
@@ -515,7 +515,7 @@ func _apply_scale_step(progress, start_scale, target_scale):
 
 # This function does a binary search to find a scale in between current and target that doesn't collide
 # It only repeats 4 times because more may find a scale slightly too big
-func _find_max_valid_scale(current_scale: float, target_scale: float) -> float:
+func find_max_valid_scale(current_scale: float, target_scale: float) -> float:
 	var best_scale = current_scale
 	for i in range(4):
 		var middle_val = (current_scale + target_scale) / 2
@@ -556,7 +556,7 @@ func push_stuff(delta) -> void:
 		var collision = get_slide_collision(i)
 		var collider := collision.get_collider()
 		if collider is Pushable and abs(collision.get_normal().x) == 1.0 and collision.get_normal().y == 0.0:
-			var size_ratio = min(scale[0] / collider.scale[0], 1.0)
+			var size_ratio = min(scale[0] / collider.get_effective_scale(), 1.0)
 			var velocity_multiplier = lerp(1.0, size_ratio, collider.scale_weight)
 			var new_velocity = velocity.x * velocity_multiplier
 			global_position.x += collider.push(new_velocity, delta)

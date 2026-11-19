@@ -6,15 +6,18 @@ extends CharacterBody2D
 	# 0.0 -> box moves at player speed; 1.0 -> double the box scale, half the push speed
 
 @onready var gravity := 1800
-@onready var max_speedX := 800 / scale[0]
+@onready var max_speedX := 800 / get_effective_scale()
 @onready var max_speedY := 1000
-@onready var acceleration := 2000 / scale[0]
+@onready var acceleration := 2000 / get_effective_scale()
 @onready var player = get_tree().get_first_node_in_group("player")
 
 var pushed_this_frame := false
 
 func _ready() -> void:
 	update_stats()
+
+func get_effective_scale() -> float:
+	return sqrt(abs(scale.x * scale.y))
 
 func push(velocity_x: float, delta: float) -> float:
 	var start_x := global_position.x
@@ -25,9 +28,9 @@ func push(velocity_x: float, delta: float) -> float:
 
 func update_stats() -> void:
 	gravity = player.gravity
-	max_speedX = player.base_max_speedX / scale[0]
+	max_speedX = player.base_max_speedX / get_effective_scale()
 	max_speedY = player.base_max_speedY
-	acceleration = player.base_acceleration / scale[0]
+	acceleration = player.base_acceleration / get_effective_scale()
 
 func _physics_process(delta: float) -> void:
 	update_stats()
