@@ -14,7 +14,6 @@ extends CharacterBody2D
 
 var player_dying := false
 var pushed_this_frame := false
-var reset_last_frame := false
 
 func _ready() -> void:
 	$BoxSpawnPoint.global_position = global_position
@@ -25,9 +24,6 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if player_dying: return
-	if reset_last_frame:
-		reset_last_frame = false
-		return
 	update_stats()
 	velocity.y = min(velocity.y + gravity * delta, max_speedY)
 	if pushed_this_frame:
@@ -49,7 +45,6 @@ func on_player_death() -> void:
 	reset_box()
 
 func reset_box() -> void:
-	reset_last_frame = true
 	velocity = Vector2.ZERO
 	global_position = $BoxSpawnPoint.global_position
 	pushed_this_frame = false
