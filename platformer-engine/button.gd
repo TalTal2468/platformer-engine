@@ -10,6 +10,7 @@ var pressed := false
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
 
 func _physics_process(_delta: float) -> void:
 	animate_height(15 if valid_presser() else 25)
@@ -18,10 +19,17 @@ func _physics_process(_delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if (body is Player or body is Pushable) and not pressed:
 		pressed = true
-		for child in get_children():
-			if child.has_method("on_press"):
-				child.on_press()
+		for button_child in get_children():
+			if button_child.has_method("on_press"):
+				button_child.on_press()
 		if kill_player: player.die()
+
+func _on_body_exited(body: Node2D) -> void:
+	if (body is Player or body is Pushable) and pressed:
+		pressed = false
+		for button_child in get_children():
+			if button_child.has_method("on_release"):
+				button_child.on_release()
 
 func valid_presser() -> bool:
 	var valid = false
