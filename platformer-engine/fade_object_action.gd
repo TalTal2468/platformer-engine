@@ -8,6 +8,10 @@ extends Node
 var fade_out_tween: Tween = null
 var fade_in_tween: Tween = null
 
+func _ready() -> void:
+	if start_objects_faded: 
+		fade_objects_out(connected_objects, 0.0)
+
 func on_press() -> void:
 	if connected_objects:
 		if start_objects_faded:
@@ -20,11 +24,12 @@ func on_release() -> void:
 			fade_objects_out(connected_objects)
 		else: fade_objects_in(connected_objects)
 
-func fade_objects_out(object: Node2D) -> void:
+func fade_objects_out(object: Node2D, custom_duration := -1.0) -> void:
+	var acting_duration = duration if custom_duration < 0.0 else custom_duration
 	if object is CanvasItem:
 		if fade_in_tween: fade_in_tween.kill()
 		fade_out_tween = create_tween()
-		fade_out_tween.tween_property(object, "modulate:a", 0.0, duration)
+		fade_out_tween.tween_property(object, "modulate:a", 0.0, acting_duration)
 		if not dont_fade_hitbox:
 			fade_out_tween.tween_callback(turn_off_hitbox.bind(object))
 
