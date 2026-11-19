@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bwdf1fw23nl17" path="res://platform.tscn" id="2_uoqbt"]
 [ext_resource type="PackedScene" uid="uid://bvouucd4vrvkk" path="res://spike.tscn" id="3_43o5b"]
 [ext_resource type="PackedScene" uid="uid://msor5s8flqan" path="res://box.tscn" id="4_3etub"]
+[ext_resource type="PackedScene" uid="uid://d47mwts2i4b7" path="res://button.tscn" id="5_whfra"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -144,6 +145,9 @@ scale = Vector2(2, 2)
 [node name="Box3" parent="Boxes" unique_id=483831957 instance=ExtResource("4_3etub")]
 position = Vector2(1850, 320)
 scale = Vector2(5, 5)
+
+[node name="Button" parent="." unique_id=2144425246 instance=ExtResource("5_whfra")]
+position = Vector2(575, 500)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]

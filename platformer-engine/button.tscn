@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://d47mwts2i4b7"]
+
+[ext_resource type="Script" uid="uid://cyqeeplmjnrka" path="res://button.gd" id="1_r04n3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mkehw"]
+size = Vector2(50, 25)
+
+[node name="Button" type="Area2D" unique_id=2144425246]
+script = ExtResource("1_r04n3")
+
+[node name="ButtonVisual" type="ColorRect" parent="." unique_id=1943645472]
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+color = Color(1, 0, 0, 1)
+
+[node name="ButtonBase" type="ColorRect" parent="." unique_id=1835415494]
+offset_left = -30.0
+offset_top = -5.0
+offset_right = 30.0
+color = Color(0, 0, 0, 1)
+
+[node name="ButtonHitbox" type="CollisionShape2D" parent="." unique_id=44707688]
+position = Vector2(0, -12.5)
+shape = SubResource("RectangleShape2D_mkehw")
