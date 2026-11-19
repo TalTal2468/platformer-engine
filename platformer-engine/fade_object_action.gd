@@ -33,18 +33,18 @@ func fade_objects_out(object: Node2D, custom_duration := -1.0) -> void:
 		if not dont_fade_hitbox:
 			fade_out_tween.tween_callback(turn_off_hitbox.bind(object))
 
-func turn_off_hitbox(object) -> void:
-	if object is CollisionShape2D or object is CollisionPolygon2D:
-		object.set_deferred("disabled", true)
-	else: for object_child in object.get_children():
-		turn_off_hitbox(object_child)
-
 func fade_objects_in(object: Node2D) -> void:
 	if object is CanvasItem:
 		if fade_out_tween: fade_out_tween.kill()
 		if not dont_fade_hitbox: turn_on_hitbox(object)
 		fade_in_tween = create_tween()
 		fade_in_tween.tween_property(object, "modulate:a", 1.0, duration)
+
+func turn_off_hitbox(object) -> void:
+	if object is CollisionShape2D or object is CollisionPolygon2D:
+		object.set_deferred("disabled", true)
+	else: for object_child in object.get_children():
+		turn_off_hitbox(object_child)
 
 func turn_on_hitbox(object) -> void:
 	if object is CollisionShape2D or object is CollisionPolygon2D:
