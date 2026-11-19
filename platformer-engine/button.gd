@@ -4,7 +4,6 @@ extends Area2D
 @onready var player = get_tree().get_first_node_in_group("player")
 
 @export var kill_player := false
-@export var connected_boxes: Node2D = null
 
 var height_animation_tween: Tween
 var pressed := false
@@ -19,14 +18,10 @@ func _physics_process(_delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if (body is Player or body is Pushable) and not pressed:
 		pressed = true
-		if connected_boxes: reset_boxes(connected_boxes)
+		for child in get_children():
+			if child.has_method("on_press"):
+				child.on_press()
 		if kill_player: player.die()
-
-func reset_boxes(object: Node2D) -> void:
-	if object is Pushable:
-		object.reset_box()
-	else: for box_child in object.get_children():
-		reset_boxes(box_child)
 
 func valid_presser() -> bool:
 	var valid = false

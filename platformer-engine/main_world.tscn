@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bvouucd4vrvkk" path="res://spike.tscn" id="3_43o5b"]
 [ext_resource type="PackedScene" uid="uid://msor5s8flqan" path="res://box.tscn" id="4_3etub"]
 [ext_resource type="PackedScene" uid="uid://d47mwts2i4b7" path="res://button.tscn" id="5_whfra"]
+[ext_resource type="PackedScene" uid="uid://ko0pw37s5xpw" path="res://respawn_box_action.tscn" id="6_uue8y"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -146,24 +147,26 @@ scale = Vector2(2, 2)
 position = Vector2(1850, 320)
 scale = Vector2(5, 5)
 
+[node name="Button" parent="." unique_id=2144425246 instance=ExtResource("5_whfra")]
+position = Vector2(500, 500)
+
+[node name="RespawnBoxAction" parent="Button" unique_id=1368269453 node_paths=PackedStringArray("connected_boxes") instance=ExtResource("6_uue8y")]
+connected_boxes = NodePath("../../ConnectedBoxes")
+
 [node name="ConnectedBoxes" type="Node2D" parent="." unique_id=373544091]
 position = Vector2(500, 500)
 
-[node name="ConnectedBox1" parent="ConnectedBoxes" unique_id=1101959888 instance=ExtResource("4_3etub")]
+[node name="ConnectedBox" parent="ConnectedBoxes" unique_id=1101959888 instance=ExtResource("4_3etub")]
 position = Vector2(-525, -100)
 
 [node name="ConnectedBox2" parent="ConnectedBoxes" unique_id=864980645 instance=ExtResource("4_3etub")]
 position = Vector2(-650, -100)
 
-[node name="Box" parent="ConnectedBoxes" unique_id=1037213326 instance=ExtResource("4_3etub")]
+[node name="ConnectedBox3" parent="ConnectedBoxes" unique_id=1037213326 instance=ExtResource("4_3etub")]
 position = Vector2(-590, -350)
 
-[node name="Box2" parent="ConnectedBoxes" unique_id=1715324658 instance=ExtResource("4_3etub")]
+[node name="ConnectedBox4" parent="ConnectedBoxes" unique_id=1715324658 instance=ExtResource("4_3etub")]
 position = Vector2(-590, -425)
-
-[node name="Button" parent="." unique_id=2144425246 node_paths=PackedStringArray("connected_boxes") instance=ExtResource("5_whfra")]
-position = Vector2(500, 500)
-connected_boxes = NodePath("../ConnectedBoxes")
 
 [node name="ConnectedDoor" parent="." unique_id=2006744283 instance=ExtResource("2_uoqbt")]
 position = Vector2(-87.5, 225)
