@@ -30,7 +30,6 @@ var hitbox_height: float
 #endregion
 #region Exports
 @export_group("Core Settings")
-@export var respawn_point: Marker2D
 @export var can_move := true
 @export var can_die := true
 @export var base_zoom := 0.9
@@ -137,6 +136,8 @@ var wall_slide_timer := 0.0
 var tap_timer := 0.0
 
 # Death
+signal player_death
+signal player_respawned
 var is_dead := false
 var just_respawned := true
 var has_flashed_red := false
@@ -168,6 +169,7 @@ func cleanup_size_change_tween() -> void:
 #region Engine Callbacks
 func _ready() -> void:
 	add_to_group("player")
+	$PlayerSpawnPoint.global_position = global_position
 	original_hitbox_height = get_hitbox_height()
 	hitbox_height = get_hitbox_height()
 	for child in get_children():
@@ -395,7 +397,7 @@ func sync_gravity_state() -> void:
 
 func set_children_y_offset(direction: int) -> void:
 	for child in get_children():
-		if child == $TestRect or child == active_flash_box:
+		if child == $PlayerNodeCenter or child == active_flash_box:
 			continue
 		if default_child_y_positions.has(child):
 			var default_y: float = default_child_y_positions[child]
@@ -572,7 +574,7 @@ func resize_camera() -> void:
 	else:
 		camera.rotation = lerp_angle(camera.rotation, 0.0, 10.0 * delta)
 #endregion
-#region Player Health & Respawn
+#region Health & Respawn
 func die() -> void:
 	if is_dead or not can_die: return
 	if not has_flashed_red:
@@ -585,19 +587,17 @@ func die() -> void:
 	death_tween.tween_property(self, "modulate:a", 0, 0.4)
 	death_tween.chain().tween_callback(func():
 		just_respawned = true
+		player_death.emit()
 		reset_player()
-		if is_instance_valid(respawn_point):
-			global_position = respawn_point.global_position
-			if not starting_gravity_normal:
-				global_position.y -= hitbox_height
-		else:
-			push_warning("Respawn point is missing or invalid")
-			global_position = Vector2.ZERO
+		global_position = $PlayerSpawnPoint.global_position
+		if not starting_gravity_normal:
+			global_position.y -= hitbox_height
 	)
 	death_tween.set_parallel(true)
 	death_tween.tween_property(self, "modulate:a", 1, 0.6)
 	death_tween.tween_callback(func(): initiate_size_change(default_size, 0.4))
 	await death_tween.finished
+	player_respawned.emit()
 	has_flashed_red = false
 	is_dead = false
 
