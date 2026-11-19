@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://msor5s8flqan" path="res://box.tscn" id="4_3etub"]
 [ext_resource type="PackedScene" uid="uid://d47mwts2i4b7" path="res://button.tscn" id="5_whfra"]
 [ext_resource type="PackedScene" uid="uid://ko0pw37s5xpw" path="res://respawn_box_action.tscn" id="6_uue8y"]
+[ext_resource type="PackedScene" uid="uid://cpaswg6yhn5ux" path="res://fade_object_action.tscn" id="7_aac4l"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -152,6 +153,9 @@ position = Vector2(500, 500)
 
 [node name="RespawnBoxAction" parent="Button" unique_id=1368269453 node_paths=PackedStringArray("connected_boxes") instance=ExtResource("6_uue8y")]
 connected_boxes = NodePath("../../ConnectedBoxes")
+
+[node name="FadeObjectAction" parent="Button" unique_id=1806911296 node_paths=PackedStringArray("connected_objects") instance=ExtResource("7_aac4l")]
+connected_objects = NodePath("../../ConnectedDoor")
 
 [node name="ConnectedBoxes" type="Node2D" parent="." unique_id=373544091]
 position = Vector2(500, 500)
