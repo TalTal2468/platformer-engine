@@ -147,7 +147,12 @@ position = Vector2(1850, 320)
 scale = Vector2(5, 5)
 
 [node name="Button" parent="." unique_id=2144425246 instance=ExtResource("5_whfra")]
-position = Vector2(575, 500)
+position = Vector2(500, 500)
+
+[node name="Platform" parent="." unique_id=2006744283 instance=ExtResource("2_uoqbt")]
+position = Vector2(-87.5, 225)
+scale = Vector2(4.5, 1)
+color = Color(0.6862745, 0.5882353, 0.5882353, 1)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]

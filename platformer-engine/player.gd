@@ -147,7 +147,7 @@ var active_flash_box: ColorRect = null
 var changing_size := false
 #endregion
 #region Memory Cleanup
-# This is all just-in-case memory cleanup, but I think they're generally not really needed
+# Most of this is just-in-case memory cleanup
 func cleanup_phase_copy() -> void:
 	if is_instance_valid(phase_copy):
 		phase_copy.queue_free()

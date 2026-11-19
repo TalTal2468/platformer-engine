@@ -1,13 +1,17 @@
 extends Node2D
 
 @onready var pathFollow: PathFollow2D = $PlatformPath/PlatformPathFollow
+@onready var platform_visual := $"PlatformVisuals&Hitbox/PlatformVisual"
+
 @export var speed = 1.0
 @export var loop := true
 @export var one_shot := false
 @export var show_path := true
+@export var color := Color8(150, 150, 150)
 var time_passed: float = 0.0
 
 func _ready():
+	platform_visual.color = color
 	$PlatformPath.loop = loop
 	$PlatformPath.one_shot = one_shot
 	$PlatformPath.scaleX = scale.x
