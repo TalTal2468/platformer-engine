@@ -4,7 +4,6 @@ extends Node
 @export var offset: Vector2 = Vector2.ZERO
 @export var move_duration := 1.0
 @export var change_global_position := false
-@export var easing := true
 
 var movement_tween: Tween = null
 var original_position: Vector2
@@ -24,5 +23,5 @@ func move_to(target_position):
 		if movement_tween: movement_tween.kill()
 		movement_tween = create_tween()
 		movement_tween.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
-		if easing: movement_tween.set_trans(Tween.TRANS_CUBIC)
+		movement_tween.set_trans(Tween.TRANS_SINE)
 		movement_tween.tween_property(connected_objects, property, target_position, move_duration)
