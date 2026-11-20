@@ -3,7 +3,7 @@ extends Node
 @export var connected_objects: Node2D = null
 @export var start_objects_faded := false
 @export var dont_fade_hitbox := false
-@export var duration := 0.2
+@export var fade_duration := 0.2
 
 var fade_out_tween: Tween = null
 var fade_in_tween: Tween = null
@@ -25,7 +25,7 @@ func on_release() -> void:
 		else: fade_objects_in(connected_objects)
 
 func fade_objects_out(object: Node2D, custom_duration := -1.0) -> void:
-	var acting_duration = duration if custom_duration < 0.0 else custom_duration
+	var acting_duration = fade_duration if custom_duration < 0.0 else custom_duration
 	if object is CanvasItem:
 		if fade_in_tween: fade_in_tween.kill()
 		fade_out_tween = create_tween()
@@ -38,7 +38,7 @@ func fade_objects_in(object: Node2D) -> void:
 		if fade_out_tween: fade_out_tween.kill()
 		if not dont_fade_hitbox: turn_on_hitbox(object)
 		fade_in_tween = create_tween()
-		fade_in_tween.tween_property(object, "modulate:a", 1.0, duration)
+		fade_in_tween.tween_property(object, "modulate:a", 1.0, fade_duration)
 
 func turn_off_hitbox(object) -> void:
 	if object is CollisionShape2D or object is CollisionPolygon2D:
