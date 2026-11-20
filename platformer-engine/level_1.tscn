@@ -1,9 +1,9 @@
 [gd_scene format=4 uid="uid://osk70lshj5bm"]
 
-[ext_resource type="Texture2D" uid="uid://clrymsaa5s1k4" path="res://Assets/[FREE] Industrial Tileset/FREE/Industrial Tileset - Free Pack 32p/1_Industrial_Tileset_1.png" id="2_hn12h"]
+[ext_resource type="Texture2D" uid="uid://bcxv11j55be2l" path="res://Assets/[FREE] Industrial Tileset/FREE/Industrial Tileset - Free Pack 32p/1_Industrial_Tileset_1.png" id="2_hn12h"]
 [ext_resource type="PackedScene" uid="uid://bia2stu0ihjki" path="res://player.tscn" id="3_ihfcg"]
 [ext_resource type="PackedScene" uid="uid://ctw6ryau8rnwj" path="res://platform_tiled.tscn" id="3_rka8t"]
-[ext_resource type="Texture2D" uid="uid://cto4s23q466xj" path="res://Assets/[FREE] Industrial Tileset/FREE/Industrial Tileset - Free Pack 32p/2_Industrial_Tileset_1_Background.png" id="4_ihfcg"]
+[ext_resource type="Texture2D" uid="uid://0f6m062r1aff" path="res://Assets/[FREE] Industrial Tileset/FREE/Industrial Tileset - Free Pack 32p/2_Industrial_Tileset_1_Background.png" id="4_ihfcg"]
 
 [sub_resource type="TileSet" id="TileSet_1x2f7"]
 
