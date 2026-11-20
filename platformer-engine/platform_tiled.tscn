@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://ctw6ryau8rnwj"]
+
+[ext_resource type="Script" uid="uid://b33c1fchj5dwu" path="res://platform.gd" id="1_0s2dh"]
+[ext_resource type="Script" uid="uid://0eupoh8nnpbs" path="res://platform_path.gd" id="2_8hk0j"]
+[ext_resource type="Script" uid="uid://bhlcg6vaohfxw" path="res://platform_visual.gd" id="3_d1q85"]
+[ext_resource type="Texture2D" uid="uid://clrymsaa5s1k4" path="res://Assets/[FREE] Industrial Tileset/FREE/Industrial Tileset - Free Pack 32p/1_Industrial_Tileset_1.png" id="4_8hk0j"]
+
+[sub_resource type="Curve2D" id="Curve2D_mi635"]
+resource_local_to_scene = true
+bake_interval = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mi635"]
+size = Vector2(32, 32)
+
+[node name="Platform" type="Node2D" unique_id=1213054912]
+script = ExtResource("1_0s2dh")
+
+[node name="PlatformPath" type="Path2D" parent="." unique_id=768050403]
+curve = SubResource("Curve2D_mi635")
+script = ExtResource("2_8hk0j")
+
+[node name="PlatformPathFollow" type="PathFollow2D" parent="PlatformPath" unique_id=1545196919]
+rotates = false
+
+[node name="PlatformMover" type="RemoteTransform2D" parent="PlatformPath/PlatformPathFollow" unique_id=1587857059]
+remote_path = NodePath("../../../PlatformVisuals&Hitbox")
+
+[node name="PlatformVisuals&Hitbox" type="AnimatableBody2D" parent="." unique_id=1390017336]
+z_index = 2
+z_as_relative = false
+
+[node name="PlatformHitbox" type="CollisionShape2D" parent="PlatformVisuals&Hitbox" unique_id=1339116433]
+shape = SubResource("RectangleShape2D_mi635")
+
+[node name="PlatformVisual" type="Node2D" parent="PlatformVisuals&Hitbox" unique_id=1574660392]
+texture_filter = 1
+script = ExtResource("3_d1q85")
+tile_texture = ExtResource("4_8hk0j")
+tile_region = Rect2(32, 32, 32, 32)
+tile_size = 32.0
+base_size = 32.0
