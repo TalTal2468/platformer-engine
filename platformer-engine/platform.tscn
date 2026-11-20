@@ -2,12 +2,10 @@
 
 [ext_resource type="Script" uid="uid://b33c1fchj5dwu" path="res://platform.gd" id="1_mi635"]
 [ext_resource type="Script" uid="uid://0eupoh8nnpbs" path="res://platform_path.gd" id="2_s8bxr"]
+[ext_resource type="Script" uid="uid://bhlcg6vaohfxw" path="res://platform_visual.gd" id="3_c1gtx"]
 
 [sub_resource type="Curve2D" id="Curve2D_mi635"]
 bake_interval = 1.0
-
-[sub_resource type="QuadMesh" id="QuadMesh_5ajho"]
-size = Vector2(50, 50)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mi635"]
 size = Vector2(50, 50)
@@ -28,9 +26,8 @@ remote_path = NodePath("../../../PlatformVisuals&Hitbox")
 [node name="PlatformVisuals&Hitbox" type="AnimatableBody2D" parent="." unique_id=1390017336]
 z_as_relative = false
 
-[node name="PlatformVisual" type="MeshInstance2D" parent="PlatformVisuals&Hitbox" unique_id=1078745339]
-modulate = Color(0.5882353, 0.5882353, 0.5882353, 1)
-mesh = SubResource("QuadMesh_5ajho")
-
 [node name="PlatformHitbox" type="CollisionShape2D" parent="PlatformVisuals&Hitbox" unique_id=1339116433]
 shape = SubResource("RectangleShape2D_mi635")
+
+[node name="Platform Visual" type="Node2D" parent="PlatformVisuals&Hitbox" unique_id=1897999183]
+script = ExtResource("3_c1gtx")
