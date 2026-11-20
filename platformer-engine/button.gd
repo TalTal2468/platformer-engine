@@ -40,6 +40,7 @@ func valid_presser() -> bool:
 	return valid
 
 func animate_height(target_height: float) -> void:
+	if target_height == button_visual.size.y: return
 	if height_animation_tween and height_animation_tween.is_valid():
 		height_animation_tween.kill()
 	height_animation_tween = create_tween()
