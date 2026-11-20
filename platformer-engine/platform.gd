@@ -17,8 +17,7 @@ func _ready():
 	$PlatformPath.scaleX = scale.x
 	$PlatformPath.scaleY = scale.y
 	$PlatformPath.show_path = show_path
-	if pathFollow:
-		pathFollow.loop = not one_shot
+	if pathFollow: pathFollow.loop = not one_shot
 
 func _physics_process(delta: float) -> void:
 	if (not pathFollow) or (pathFollow.get_parent() is Path2D and pathFollow.get_parent().curve.get_baked_length() == 0):
