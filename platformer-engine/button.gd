@@ -3,7 +3,7 @@ extends Area2D
 @onready var button_visual = $ButtonVisual
 @onready var player = get_tree().get_first_node_in_group("player")
 
-@export var reset_player := false
+@export var kill_player := false
 
 var height_animation_tween: Tween
 var pressed := false
@@ -22,7 +22,7 @@ func _on_body_entered(body: Node2D) -> void:
 		for button_child in get_children():
 			if button_child.has_method("on_press"):
 				button_child.on_press()
-		if reset_player: player.die()
+		if kill_player: player.die()
 
 func _on_body_exited(body: Node2D) -> void:
 	if (body is Player or body is Pushable) and not valid_presser() and pressed:
