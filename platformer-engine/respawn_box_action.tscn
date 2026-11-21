@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ko0pw37s5xpw"]
+
+[ext_resource type="Script" uid="uid://vcuexmawnopi" path="res://respawn_box_action.gd" id="1_jobfp"]
+
+[node name="RespawnBoxAction" type="Node" unique_id=1368269453]
+script = ExtResource("1_jobfp")
