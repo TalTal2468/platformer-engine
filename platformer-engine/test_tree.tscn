@@ -20,7 +20,6 @@ position = Vector2(0, -80)
 
 [node name="Tree4" parent="FallPivot" unique_id=1332328622 instance=ExtResource("1_kdiwv")]
 position = Vector2(0, -112)
-rotation = 0.0004841518
 
 [node name="Interaction_Area" type="Area2D" parent="." unique_id=659376055]
 
