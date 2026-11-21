@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cpaswg6yhn5ux" path="res://fade_object_action.tscn" id="7_aac4l"]
 [ext_resource type="PackedScene" uid="uid://chyvi3ugj2kbu" path="res://move_object_action.tscn" id="8_7ktct"]
 [ext_resource type="PackedScene" uid="uid://dd1qypj731vb5" path="res://toggle_object_movement_action.tscn" id="9_uks48"]
+[ext_resource type="PackedScene" uid="uid://dh6adbn6if5qg" path="res://test_tree.tscn" id="10_vqk0m"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -206,6 +207,9 @@ connected_objects = NodePath("../../Platforms/Platform11")
 
 [node name="toggle_object_movement_action2" parent="Button3" unique_id=490999901 node_paths=PackedStringArray("connected_objects") instance=ExtResource("9_uks48")]
 connected_objects = NodePath("../../Spikes/Spike2")
+
+[node name="TreeCollectable" parent="." unique_id=1081903387 instance=ExtResource("10_vqk0m")]
+position = Vector2(-685, 500)
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]
