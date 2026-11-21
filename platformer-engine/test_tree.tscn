@@ -7,18 +7,20 @@ size = Vector2(62, 32)
 
 [node name="TreeCollectable" type="Node2D" unique_id=1081903387]
 
-[node name="Node2D" type="Node2D" parent="." unique_id=1623712032]
+[node name="FallPivot" type="Node2D" parent="." unique_id=1623712032]
 
-[node name="Tree" parent="Node2D" unique_id=1759190094 instance=ExtResource("1_kdiwv")]
+[node name="Tree" parent="FallPivot" unique_id=1759190094 instance=ExtResource("1_kdiwv")]
+position = Vector2(0, -16)
 
-[node name="Tree2" parent="Node2D" unique_id=1989453848 instance=ExtResource("1_kdiwv")]
-position = Vector2(0, -32)
+[node name="Tree2" parent="FallPivot" unique_id=1989453848 instance=ExtResource("1_kdiwv")]
+position = Vector2(0, -48)
 
-[node name="Tree3" parent="Node2D" unique_id=1989449531 instance=ExtResource("1_kdiwv")]
-position = Vector2(0, -64)
+[node name="Tree3" parent="FallPivot" unique_id=1989449531 instance=ExtResource("1_kdiwv")]
+position = Vector2(0, -80)
 
-[node name="Tree4" parent="Node2D" unique_id=1332328622 instance=ExtResource("1_kdiwv")]
-position = Vector2(0, -96)
+[node name="Tree4" parent="FallPivot" unique_id=1332328622 instance=ExtResource("1_kdiwv")]
+position = Vector2(0, -112)
+rotation = 0.0004841518
 
 [node name="Interaction_Area" type="Area2D" parent="." unique_id=659376055]
 
