@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://b33c1fchj5dwu" path="res://platform.gd" id="1_mi635"]
 [ext_resource type="Script" uid="uid://0eupoh8nnpbs" path="res://platform_path.gd" id="2_s8bxr"]
-[ext_resource type="Script" uid="uid://bhlcg6vaohfxw" path="res://platform_visual.gd" id="3_c1gtx"]
 
 [sub_resource type="Curve2D" id="Curve2D_mi635"]
 bake_interval = 1.0
@@ -26,8 +25,12 @@ remote_path = NodePath("../../../PlatformVisuals&Hitbox")
 [node name="PlatformVisuals&Hitbox" type="AnimatableBody2D" parent="." unique_id=1390017336]
 z_as_relative = false
 
+[node name="PlatformVisual" type="ColorRect" parent="PlatformVisuals&Hitbox" unique_id=1333445230]
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+color = Color(0.5882353, 0.5882353, 0.5882353, 1)
+
 [node name="PlatformHitbox" type="CollisionShape2D" parent="PlatformVisuals&Hitbox" unique_id=1339116433]
 shape = SubResource("RectangleShape2D_mi635")
-
-[node name="Platform Visual" type="Node2D" parent="PlatformVisuals&Hitbox" unique_id=1897999183]
-script = ExtResource("3_c1gtx")
