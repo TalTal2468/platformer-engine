@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://chyvi3ugj2kbu"]
+
+[ext_resource type="Script" uid="uid://b80cnphgr86ug" path="res://move_object_action.gd" id="1_jwx3i"]
+
+[node name="MoveObjectAction" type="Node" unique_id=259177394]
+script = ExtResource("1_jwx3i")

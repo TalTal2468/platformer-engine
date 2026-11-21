@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cpaswg6yhn5ux"]
+
+[ext_resource type="Script" uid="uid://hh341ihvvjto" path="res://fade_object_action.gd" id="1_cemsk"]
+
+[node name="FadeObjectAction" type="Node" unique_id=1806911296]
+script = ExtResource("1_cemsk")
