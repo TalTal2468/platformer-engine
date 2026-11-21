@@ -1,17 +1,23 @@
+class_name Spike
 extends Node2D
 
 @onready var pathFollow: PathFollow2D = $SpikePath/SpikePathFollow
+
+@export var start_moving := true
 @export var speed = 1.0
 @export var loop := true
 @export var one_shot := false
+
 var time_passed: float = 0.0
+var moving: bool
 
 func _ready():
+	moving = start_moving
 	if pathFollow:
 		pathFollow.loop = not one_shot
 
 func _physics_process(delta: float) -> void:
-	if (not pathFollow) or (pathFollow.get_parent() is Path2D and pathFollow.get_parent().curve.get_baked_length() == 0):
+	if (not pathFollow) or (pathFollow.get_parent() is Path2D and pathFollow.get_parent().curve.get_baked_length() == 0) or not moving:
 		return
 	if loop and not one_shot:
 		time_passed += delta

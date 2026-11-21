@@ -30,7 +30,6 @@ var hitbox_height: float
 #endregion
 #region Exports
 @export_group("Core Settings")
-@export var respawn_point: Marker2D
 @export var can_move := true
 @export var can_die := true
 @export var base_zoom := 0.9
@@ -137,6 +136,8 @@ var wall_slide_timer := 0.0
 var tap_timer := 0.0
 
 # Death
+signal player_death
+signal player_respawned
 var is_dead := false
 var just_respawned := true
 var has_flashed_red := false
@@ -146,7 +147,7 @@ var active_flash_box: ColorRect = null
 var changing_size := false
 #endregion
 #region Memory Cleanup
-# This is all just-in-case memory cleanup, but I think they're generally not really needed
+# Most of this is just-in-case memory cleanup
 func cleanup_phase_copy() -> void:
 	if is_instance_valid(phase_copy):
 		phase_copy.queue_free()
@@ -167,6 +168,8 @@ func cleanup_size_change_tween() -> void:
 #endregion
 #region Engine Callbacks
 func _ready() -> void:
+	add_to_group("player")
+	$PlayerSpawnPoint.global_position = global_position
 	original_hitbox_height = get_hitbox_height()
 	hitbox_height = get_hitbox_height()
 	for child in get_children():
@@ -394,7 +397,7 @@ func sync_gravity_state() -> void:
 
 func set_children_y_offset(direction: int) -> void:
 	for child in get_children():
-		if child == $TestRect or child == active_flash_box:
+		if child == $PlayerNodeCenter or child == active_flash_box:
 			continue
 		if default_child_y_positions.has(child):
 			var default_y: float = default_child_y_positions[child]
@@ -494,19 +497,19 @@ func initiate_size_change(target_scale_multiplier: float, custom_duration: float
 	changing_size = true
 	size_change_tween = create_tween()
 	size_change_tween.tween_method(
-		func(progress): _apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
+		func(progress): apply_scale_step(progress, start_scale, target_scale), 0.0, 1.0, duration)
 	size_change_tween.set_trans(Tween.TRANS_CUBIC)
 	size_change_tween.set_ease(Tween.EASE_OUT)
 	size_change_tween.tween_callback(func(): changing_size = false)
 
-func _apply_scale_step(progress, start_scale, target_scale):
+func apply_scale_step(progress, start_scale, target_scale):
 	var next_scale = start_scale.lerp(target_scale, progress)
 	if next_scale.x > scale.x and not is_dead:
 		$PlayerHitbox.shape.size *= (next_scale / scale)
 		var colliding = move_and_collide(Vector2.ZERO, true)
 		$PlayerHitbox.shape.size /= (next_scale / scale)
 		if colliding:
-			_apply_scale(_find_max_valid_scale(scale.x, next_scale.x))
+			_apply_scale(find_max_valid_scale(scale.x, next_scale.x))
 			cleanup_size_change_tween()
 			changing_size = false
 			return
@@ -514,7 +517,7 @@ func _apply_scale_step(progress, start_scale, target_scale):
 
 # This function does a binary search to find a scale in between current and target that doesn't collide
 # It only repeats 4 times because more may find a scale slightly too big
-func _find_max_valid_scale(current_scale: float, target_scale: float) -> float:
+func find_max_valid_scale(current_scale: float, target_scale: float) -> float:
 	var best_scale = current_scale
 	for i in range(4):
 		var middle_val = (current_scale + target_scale) / 2
@@ -547,16 +550,18 @@ func update_movement_stats() -> void:
 func reset_velocity_x(pre_move_vel_x: float) -> void:
 	for i in get_slide_collision_count():
 		if get_slide_collision(i).get_collider() is Pushable:
-			velocity.x = pre_move_vel_x
+			if is_on_floor(): velocity.x = pre_move_vel_x
+			else: velocity.x = pre_move_vel_x * 0.8
 
 func push_stuff(delta) -> void:
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
 		var collider := collision.get_collider()
 		if collider is Pushable and abs(collision.get_normal().x) == 1.0 and collision.get_normal().y == 0.0:
-			global_position.x += collider.push(velocity.x * min(scale[0] / collider.scale[0], 1.0), delta)
-			return
-
+			var size_ratio = min(scale[0] / collider.get_effective_scale(), 1.0)
+			var velocity_multiplier = lerp(1.0, size_ratio, collider.scale_weight)
+			var new_velocity = velocity.x * velocity_multiplier
+			global_position.x += collider.push(new_velocity, delta)
 #endregion
 #region Camera
 func resize_camera() -> void:
@@ -569,7 +574,7 @@ func resize_camera() -> void:
 	else:
 		camera.rotation = lerp_angle(camera.rotation, 0.0, 10.0 * delta)
 #endregion
-#region Player Health & Respawn
+#region Health & Respawn
 func die() -> void:
 	if is_dead or not can_die: return
 	if not has_flashed_red:
@@ -582,19 +587,17 @@ func die() -> void:
 	death_tween.tween_property(self, "modulate:a", 0, 0.4)
 	death_tween.chain().tween_callback(func():
 		just_respawned = true
+		player_death.emit()
 		reset_player()
-		if is_instance_valid(respawn_point):
-			global_position = respawn_point.global_position
-			if not starting_gravity_normal:
-				global_position.y -= hitbox_height
-		else:
-			push_warning("Respawn point is missing or invalid")
-			global_position = Vector2.ZERO
+		global_position = $PlayerSpawnPoint.global_position
+		if not starting_gravity_normal:
+			global_position.y -= hitbox_height
 	)
 	death_tween.set_parallel(true)
 	death_tween.tween_property(self, "modulate:a", 1, 0.6)
 	death_tween.tween_callback(func(): initiate_size_change(default_size, 0.4))
 	await death_tween.finished
+	player_respawned.emit()
 	has_flashed_red = false
 	is_dead = false
 

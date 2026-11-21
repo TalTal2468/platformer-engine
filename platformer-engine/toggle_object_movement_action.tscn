@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dd1qypj731vb5"]
+
+[ext_resource type="Script" uid="uid://cqt3u8awxcgpx" path="res://toggle_object_movement_action.gd" id="1_raf8e"]
+
+[node name="toggle_object_movement_action" type="Node" unique_id=2112331148]
+script = ExtResource("1_raf8e")
