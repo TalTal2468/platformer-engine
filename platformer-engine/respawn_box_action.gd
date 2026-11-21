@@ -8,5 +8,5 @@ func on_press() -> void:
 func reset_boxes(object: Node) -> void:
 	if object is Pushable:
 		object.reset_box()
-	else: for box_child in object.get_children():
-		reset_boxes(box_child)
+	else: for object_child in object.get_children():
+		reset_boxes(object_child)

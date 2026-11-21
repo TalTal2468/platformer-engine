@@ -1,16 +1,21 @@
+class_name Platform
 extends Node2D
 
 @onready var pathFollow: PathFollow2D = $PlatformPath/PlatformPathFollow
 @onready var platform_visual := $"PlatformVisuals&Hitbox/PlatformVisual"
 
+@export var start_moving := true
 @export var speed = 1.0
 @export var loop := true
 @export var one_shot := false
 @export var show_path := true
 @export var color := Color8(150, 150, 150)
+
 var time_passed: float = 0.0
+var moving: bool
 
 func _ready():
+	moving = start_moving
 	platform_visual.color = color
 	$PlatformPath.loop = loop
 	$PlatformPath.one_shot = one_shot
@@ -20,9 +25,9 @@ func _ready():
 	if pathFollow: pathFollow.loop = not one_shot
 
 func _physics_process(delta: float) -> void:
-	if (not pathFollow) or (pathFollow.get_parent() is Path2D and pathFollow.get_parent().curve.get_baked_length() == 0):
-		return
 	pathFollow.global_rotation = 0
+	if (not pathFollow) or (pathFollow.get_parent() is Path2D and pathFollow.get_parent().curve.get_baked_length() == 0) or not moving:
+		return
 	if loop and not one_shot:
 		time_passed += delta
 		pathFollow.progress_ratio = (sin(speed * time_passed) + 1) / 2

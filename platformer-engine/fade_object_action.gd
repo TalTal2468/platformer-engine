@@ -2,7 +2,7 @@ extends Node
 
 @export var connected_objects: Node2D = null
 @export var start_objects_faded := false
-@export var fade_hitbox := true
+@export var disable_object_hitbox_on_fade := true
 @export var fade_duration := 0.2
 
 var fade_tween: Tween = null
@@ -29,13 +29,13 @@ func fade_objects_out(object: Node2D, custom_duration := -1.0) -> void:
 		if fade_tween: fade_tween.kill()
 		fade_tween = create_tween()
 		fade_tween.tween_property(object, "modulate:a", 0.0, acting_duration)
-		if fade_hitbox:
+		if disable_object_hitbox_on_fade:
 			fade_tween.tween_callback(set_hitbox.bind(object, false))
 
 func fade_objects_in(object: Node2D) -> void:
 	if object is CanvasItem:
 		if fade_tween: fade_tween.kill()
-		if fade_hitbox: set_hitbox(object, true)
+		if disable_object_hitbox_on_fade: set_hitbox(object, true)
 		fade_tween = create_tween()
 		fade_tween.tween_property(object, "modulate:a", 1.0, fade_duration)
 

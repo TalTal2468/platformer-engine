@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://ko0pw37s5xpw" path="res://respawn_box_action.tscn" id="6_uue8y"]
 [ext_resource type="PackedScene" uid="uid://cpaswg6yhn5ux" path="res://fade_object_action.tscn" id="7_aac4l"]
 [ext_resource type="PackedScene" uid="uid://chyvi3ugj2kbu" path="res://move_object_action.tscn" id="8_7ktct"]
+[ext_resource type="PackedScene" uid="uid://dd1qypj731vb5" path="res://toggle_object_movement_action.tscn" id="9_uks48"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -196,6 +197,15 @@ offset = Vector2(0, -400)
 [node name="ConnectedMovingPlatform" parent="." unique_id=1109994983 instance=ExtResource("2_uoqbt")]
 position = Vector2(975, -1050)
 scale = Vector2(3, 1)
+
+[node name="Button3" parent="." unique_id=1323999067 instance=ExtResource("5_whfra")]
+position = Vector2(1050, 500)
+
+[node name="toggle_object_movement_action" parent="Button3" unique_id=2112331148 node_paths=PackedStringArray("connected_objects") instance=ExtResource("9_uks48")]
+connected_objects = NodePath("../../Platforms/Platform11")
+
+[node name="toggle_object_movement_action2" parent="Button3" unique_id=490999901 node_paths=PackedStringArray("connected_objects") instance=ExtResource("9_uks48")]
+connected_objects = NodePath("../../Spikes/Spike2")
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]
