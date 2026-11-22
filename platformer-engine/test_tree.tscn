@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://dh6adbn6if5qg"]
 
+[ext_resource type="Script" uid="uid://doqriu1rgtk63" path="res://tree_collectable.gd" id="1_1naqg"]
 [ext_resource type="PackedScene" uid="uid://b5yi0xfggup3c" path="res://tree.tscn" id="1_kdiwv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1x2f7"]
 size = Vector2(62, 32)
 
 [node name="TreeCollectable" type="Node2D" unique_id=1081903387]
+script = ExtResource("1_1naqg")
 
 [node name="FallPivot" type="Node2D" parent="." unique_id=1623712032]
 
