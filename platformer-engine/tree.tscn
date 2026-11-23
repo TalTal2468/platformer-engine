@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://b5yi0xfggup3c"]
+
+[ext_resource type="Texture2D" uid="uid://dj6tqtr4wewqd" path="res://Assets/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/Mine_Tileset_1B.png" id="1_brfkd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qykh5"]
+size = Vector2(32, 32)
+
+[node name="Tree" type="StaticBody2D" unique_id=301611361]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1709695254]
+texture_filter = 1
+texture = ExtResource("1_brfkd")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=951336885]
+shape = SubResource("RectangleShape2D_qykh5")
