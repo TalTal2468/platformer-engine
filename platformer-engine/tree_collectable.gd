@@ -12,10 +12,8 @@ signal tutorial_prompt_changed(message: String, visible: bool)
 @onready var interaction_area: Area2D = $Interaction_Area
 
 var player_in_range: CharacterBody2D = null
-
 var is_falling := false
 var is_felled := false
-
 var wood_count := 0
 
 
@@ -24,6 +22,9 @@ func _ready() -> void:
 
 	interaction_area.body_entered.connect(_on_body_entered)
 	interaction_area.body_exited.connect(_on_body_exited)
+
+	print("TREE READY: ", name)
+	print("Interaction Area monitoring: ", interaction_area.monitoring)
 
 
 func _process(_delta: float) -> void:
@@ -38,6 +39,9 @@ func _process(_delta: float) -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
+	print("BODY ENTERED: ", body.name)
+	print("Is player group: ", body.is_in_group("player"))
+
 	if not body.is_in_group("player"):
 		return
 
@@ -46,7 +50,14 @@ func _on_body_entered(body: Node2D) -> void:
 
 	player_in_range = body as CharacterBody2D
 
+	if player_in_range == null:
+		print("ERROR: Player is not a CharacterBody2D")
+		return
+
+	print("PLAYER DETECTED")
+
 	if show_tutorial_prompt:
+		print("EMITTING PROMPT SIGNAL")
 		tutorial_prompt_changed.emit("Press F to fell the tree", true)
 
 
@@ -55,6 +66,7 @@ func _on_body_exited(body: Node2D) -> void:
 		return
 
 	player_in_range = null
+	print("PLAYER LEFT TREE")
 
 	if show_tutorial_prompt and not is_felled:
 		tutorial_prompt_changed.emit("", false)
@@ -78,7 +90,6 @@ func fell_tree() -> void:
 		direction = -1.0
 
 	var fall_tween := create_tween()
-
 	fall_tween.set_trans(Tween.TRANS_CUBIC)
 	fall_tween.set_ease(Tween.EASE_IN)
 
@@ -96,21 +107,13 @@ func fell_tree() -> void:
 
 	interaction_area.set_deferred("monitoring", false)
 
-	# Disable collision on every wood block.
 	for block in fall_pivot.get_children():
-		var shapes := block.find_children(
-			"*",
-			"CollisionShape2D",
-			true,
-			false
-		)
+		var shapes := block.find_children("*", "CollisionShape2D", true, false)
 
 		for shape in shapes:
 			shape.set_deferred("disabled", true)
 
-	# Fade the fallen tree away.
 	var fade_tween := create_tween()
-
 	fade_tween.tween_property(
 		fall_pivot,
 		"modulate:a",
