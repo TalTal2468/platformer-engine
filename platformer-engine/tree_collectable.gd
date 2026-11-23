@@ -8,6 +8,10 @@ signal tutorial_prompt_changed(message: String, visible: bool)
 @export var fall_duration := 0.85
 @export var fade_duration := 0.8
 
+@export_group("Impact Effects")
+@export var camera_shake_strength := 3.0
+@export var camera_shake_duration := 0.15
+
 @onready var fall_pivot: Node2D = $FallPivot
 @onready var interaction_area: Area2D = $Interaction_Area
 
@@ -76,7 +80,6 @@ func fell_tree() -> void:
 	if show_tutorial_prompt:
 		tutorial_prompt_changed.emit("", false)
 
-	# Determine which direction the tree should fall.
 	var direction := 1.0
 
 	if player_in_range.global_position.x > global_position.x:
@@ -84,11 +87,7 @@ func fell_tree() -> void:
 
 	var final_rotation := direction * PI / 2.0
 
-	# --------------------------------------------------
-	# 1. ANTICIPATION
-	# The tree leans backwards before beginning to fall.
-	# --------------------------------------------------
-
+	# 1. Anticipation.
 	var fall_tween := create_tween()
 
 	fall_tween.tween_property(
@@ -98,7 +97,6 @@ func fell_tree() -> void:
 		0.09
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
-	# Small forward movement before the main fall.
 	fall_tween.tween_property(
 		fall_pivot,
 		"rotation",
@@ -106,11 +104,7 @@ func fell_tree() -> void:
 		0.08
 	).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-	# --------------------------------------------------
-	# 2. WEIGHTED FALL
-	# Accelerates as the tree falls.
-	# --------------------------------------------------
-
+	# 2. Weighted fall.
 	fall_tween.tween_property(
 		fall_pivot,
 		"rotation",
@@ -118,11 +112,7 @@ func fell_tree() -> void:
 		fall_duration
 	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 
-	# --------------------------------------------------
-	# 3. IMPACT AND SETTLING
-	# Slightly overshoots, then settles into position.
-	# --------------------------------------------------
-
+	# 3. Impact settling.
 	fall_tween.tween_property(
 		fall_pivot,
 		"rotation",
@@ -135,10 +125,9 @@ func fell_tree() -> void:
 	is_falling = false
 	is_felled = true
 
-	# Disable interaction after the tree has fallen.
 	interaction_area.set_deferred("monitoring", false)
 
-	# Disable all physical collisions belonging to the tree blocks.
+	# Disable physical collision.
 	for block in fall_pivot.get_children():
 		var shapes := block.find_children(
 			"*",
@@ -150,12 +139,12 @@ func fell_tree() -> void:
 		for shape in shapes:
 			shape.set_deferred("disabled", true)
 
-	# --------------------------------------------------
-	# 4. IMPACT PAUSE AND DISAPPEARANCE
-	# --------------------------------------------------
+	# 4. Impact camera shake.
+	shake_camera()
 
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.25).timeout
 
+	# 5. Fade away.
 	var fade_tween := create_tween()
 
 	fade_tween.tween_property(
@@ -167,5 +156,51 @@ func fell_tree() -> void:
 
 	await fade_tween.finished
 
-	# Award wood after the complete animation.
 	tree_felled.emit(wood_count)
+
+
+func shake_camera() -> void:
+	if not is_instance_valid(player_in_range):
+		return
+
+	var cameras := player_in_range.find_children(
+		"*",
+		"Camera2D",
+		true,
+		false
+	)
+
+	if cameras.is_empty():
+		return
+
+	var camera := cameras[0] as Camera2D
+	var original_offset := camera.offset
+
+	var tween := create_tween()
+
+	tween.tween_property(
+		camera,
+		"offset",
+		original_offset + Vector2(
+			camera_shake_strength,
+			camera_shake_strength * 0.5
+		),
+		camera_shake_duration * 0.25
+	)
+
+	tween.tween_property(
+		camera,
+		"offset",
+		original_offset + Vector2(
+			-camera_shake_strength * 0.7,
+			-camera_shake_strength * 0.3
+		),
+		camera_shake_duration * 0.25
+	)
+
+	tween.tween_property(
+		camera,
+		"offset",
+		original_offset,
+		camera_shake_duration * 0.5
+	)
