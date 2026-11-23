@@ -7,11 +7,9 @@ extends Node2D
 @onready var tree_prompt: Label = $TutorialUI/TreePrompt
 
 var wood_panel: PanelContainer
-var wood_icon: Label
 var wood_label: Label
-var current_wood_amount: int = 0
 
-var spend_test_was_pressed := false
+var current_wood_amount: int = 0
 
 
 func _ready() -> void:
@@ -33,19 +31,6 @@ func _ready() -> void:
 	_on_wood_changed(GameState.wood_count)
 
 
-func _process(_delta: float) -> void:
-	# TEMPORARY TEST: Press K to spend one wood.
-	var pressed := Input.is_key_pressed(KEY_K)
-
-	if pressed and not spend_test_was_pressed:
-		if GameState.spend_wood(1):
-			print("Spent 1 wood. Remaining: ", GameState.wood_count)
-		else:
-			print("Not enough wood!")
-
-	spend_test_was_pressed = pressed
-
-
 func setup_tutorial_prompt() -> void:
 	tree_prompt.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	tree_prompt.size = Vector2(220, 36)
@@ -63,9 +48,9 @@ func setup_tutorial_prompt() -> void:
 
 func setup_wood_hud() -> void:
 	wood_panel = PanelContainer.new()
-	wood_panel.name = "WoodCounter"
+	wood_panel.name = "AlienWoodCounter"
 	wood_panel.position = Vector2(24, 24)
-	wood_panel.custom_minimum_size = Vector2(142, 46)
+	wood_panel.custom_minimum_size = Vector2(160, 46)
 
 	var panel_style := StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.055, 0.09, 0.075, 0.94)
@@ -85,9 +70,13 @@ func setup_wood_hud() -> void:
 	row.add_theme_constant_override("separation", 12)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 
-	wood_icon = Label.new()
-	wood_icon.text = "🪵"
-	wood_icon.add_theme_font_size_override("font_size", 23)
+	var title := Label.new()
+	title.text = "ALIEN WOOD"
+	title.add_theme_font_size_override("font_size", 15)
+	title.add_theme_color_override(
+		"font_color",
+		Color(0.65, 0.82, 0.62)
+	)
 
 	wood_label = Label.new()
 	wood_label.add_theme_font_size_override("font_size", 22)
@@ -96,13 +85,13 @@ func setup_wood_hud() -> void:
 		Color(0.90, 0.94, 0.85)
 	)
 
-	row.add_child(wood_icon)
+	row.add_child(title)
 	row.add_child(wood_label)
 
 	wood_panel.add_child(row)
 	tutorial_ui.add_child(wood_panel)
 
-	wood_panel.pivot_offset = Vector2(71, 23)
+	wood_panel.pivot_offset = Vector2(80, 23)
 
 
 func _on_tree_felled(amount: int) -> void:

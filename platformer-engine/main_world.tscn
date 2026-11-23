@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://chyvi3ugj2kbu" path="res://move_object_action.tscn" id="8_7ktct"]
 [ext_resource type="PackedScene" uid="uid://dd1qypj731vb5" path="res://toggle_object_movement_action.tscn" id="9_uks48"]
 [ext_resource type="PackedScene" uid="uid://dh6adbn6if5qg" path="res://test_tree.tscn" id="10_vqk0m"]
+[ext_resource type="Script" uid="uid://cciqmvbini4v" path="res://bridge_builder.gd" id="12_8i6ae"]
+[ext_resource type="PackedScene" uid="uid://b5yi0xfggup3c" path="res://tree.tscn" id="13_v7yd6"]
 
 [sub_resource type="Curve2D" id="Curve2D_43o5b"]
 bake_interval = 1.0
@@ -223,6 +225,10 @@ offset_top = 442.0
 offset_right = -464.0
 offset_bottom = 465.0
 text = "Press F to Fell the Tree"
+
+[node name="BridgeBuilder" type="Node2D" parent="." unique_id=1853093507]
+script = ExtResource("12_8i6ae")
+block_scene = ExtResource("13_v7yd6")
 
 [editable path="Platforms/Platform11"]
 [editable path="Platforms/Platform12"]
