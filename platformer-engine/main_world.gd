@@ -6,7 +6,12 @@ extends Node2D
 @onready var tutorial_ui: CanvasLayer = $TutorialUI
 @onready var tree_prompt: Label = $TutorialUI/TreePrompt
 
+var wood_panel: PanelContainer
+var wood_icon: Label
 var wood_label: Label
+var current_wood_amount: int = 0
+
+var spend_test_was_pressed := false
 
 
 func _ready() -> void:
@@ -15,19 +20,30 @@ func _ready() -> void:
 	setup_tutorial_prompt()
 	setup_wood_hud()
 
-	tree_collectable.connect(
-		"tutorial_prompt_changed",
+	tree_collectable.tutorial_prompt_changed.connect(
 		_on_tutorial_prompt_changed
 	)
 
-	tree_collectable.connect(
-		"tree_felled",
+	tree_collectable.tree_felled.connect(
 		_on_tree_felled
 	)
 
 	GameState.wood_changed.connect(_on_wood_changed)
 
 	_on_wood_changed(GameState.wood_count)
+
+
+func _process(_delta: float) -> void:
+	# TEMPORARY TEST: Press K to spend one wood.
+	var pressed := Input.is_key_pressed(KEY_K)
+
+	if pressed and not spend_test_was_pressed:
+		if GameState.spend_wood(1):
+			print("Spent 1 wood. Remaining: ", GameState.wood_count)
+		else:
+			print("Not enough wood!")
+
+	spend_test_was_pressed = pressed
 
 
 func setup_tutorial_prompt() -> void:
@@ -46,39 +62,47 @@ func setup_tutorial_prompt() -> void:
 
 
 func setup_wood_hud() -> void:
-	var panel := PanelContainer.new()
-
-	panel.name = "WoodCounter"
-	panel.position = Vector2(24, 24)
-	panel.custom_minimum_size = Vector2(160, 48)
+	wood_panel = PanelContainer.new()
+	wood_panel.name = "WoodCounter"
+	wood_panel.position = Vector2(24, 24)
+	wood_panel.custom_minimum_size = Vector2(142, 46)
 
 	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.055, 0.09, 0.075, 0.92)
+	panel_style.bg_color = Color(0.055, 0.09, 0.075, 0.94)
 	panel_style.border_color = Color(0.35, 0.55, 0.40, 0.9)
 
 	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(8)
+	panel_style.set_corner_radius_all(9)
 
-	panel_style.content_margin_left = 14
-	panel_style.content_margin_right = 14
-	panel_style.content_margin_top = 8
-	panel_style.content_margin_bottom = 8
+	panel_style.content_margin_left = 12
+	panel_style.content_margin_right = 12
+	panel_style.content_margin_top = 6
+	panel_style.content_margin_bottom = 6
 
-	panel.add_theme_stylebox_override("panel", panel_style)
+	wood_panel.add_theme_stylebox_override("panel", panel_style)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+
+	wood_icon = Label.new()
+	wood_icon.text = "🪵"
+	wood_icon.add_theme_font_size_override("font_size", 23)
 
 	wood_label = Label.new()
-	wood_label.name = "WoodLabel"
-	wood_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	wood_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-
-	wood_label.add_theme_font_size_override("font_size", 20)
+	wood_label.add_theme_font_size_override("font_size", 22)
 	wood_label.add_theme_color_override(
 		"font_color",
 		Color(0.90, 0.94, 0.85)
 	)
 
-	panel.add_child(wood_label)
-	tutorial_ui.add_child(panel)
+	row.add_child(wood_icon)
+	row.add_child(wood_label)
+
+	wood_panel.add_child(row)
+	tutorial_ui.add_child(wood_panel)
+
+	wood_panel.pivot_offset = Vector2(71, 23)
 
 
 func _on_tree_felled(amount: int) -> void:
@@ -86,8 +110,34 @@ func _on_tree_felled(amount: int) -> void:
 
 
 func _on_wood_changed(new_amount: int) -> void:
-	if is_instance_valid(wood_label):
-		wood_label.text = "WOOD   " + str(new_amount)
+	if not is_instance_valid(wood_label):
+		return
+
+	var increased := new_amount > current_wood_amount
+
+	current_wood_amount = new_amount
+	wood_label.text = str(new_amount)
+
+	if increased:
+		animate_wood_counter()
+
+
+func animate_wood_counter() -> void:
+	var tween := create_tween()
+
+	tween.tween_property(
+		wood_panel,
+		"scale",
+		Vector2(1.12, 1.12),
+		0.10
+	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	tween.tween_property(
+		wood_panel,
+		"scale",
+		Vector2.ONE,
+		0.16
+	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func _on_tutorial_prompt_changed(
